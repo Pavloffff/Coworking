@@ -26,6 +26,8 @@ const InputPanel: React.FC = () => {
 				display: 'flex',
 				alignItems: 'center',
 				gap: '16px',
+				marginLeft: '9px',
+				marginRight: '12px',
 			}}
 		>
 			<Input

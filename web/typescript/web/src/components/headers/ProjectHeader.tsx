@@ -17,6 +17,8 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
 				display: 'flex',
 				alignItems: 'center',
 				gap: '8px',
+				marginLeft: '8px',
+				marginRight: '12px',
 			}}
 		>
 			<Title level={2} style={{ margin: 0 }}>

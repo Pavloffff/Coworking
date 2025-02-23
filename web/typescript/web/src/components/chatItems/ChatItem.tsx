@@ -16,8 +16,6 @@ const ChatItem: React.FC<ChatItemProps> = ({ photo, name, text }) => {
 				display: 'flex',
 				alignItems: 'flex-start',
 				padding: '12px',
-				border: '1px solid #e0e0e0',
-				borderRadius: '8px',
 				backgroundColor: '#f9f9f9',
 				marginBottom: '16px',
 			}}
@@ -37,7 +35,7 @@ const ChatItem: React.FC<ChatItemProps> = ({ photo, name, text }) => {
 						marginBottom: '4px',
 					}}
 				>
-					<Title level={3} style={{ margin: 0 }}>
+					<Title level={5} style={{ margin: 0 }}>
 						{name}
 					</Title>
 				</div>

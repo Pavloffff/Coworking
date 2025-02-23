@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import GreyButton from '../buttons/GreyButton'
 import ButtonCollection from '../collections/ButtonCollection'
 import {
@@ -8,14 +7,15 @@ import {
 	UserOutlined,
 } from '@ant-design/icons'
 
-const TabPanel = () => {
-	const [selectedButton, setSelectedButton] = useState('btn1')
+interface TabPanelProps {
+	selectedButton: string
+	onButtonSelect: (buttonKey: string) => void
+}
 
-	const handleButtonClick = (buttonKey: string) => {
-		setSelectedButton(buttonKey)
-		console.log(`Выбрана кнопка: ${buttonKey}`)
-	}
-
+const TabPanel: React.FC<TabPanelProps> = ({
+	selectedButton,
+	onButtonSelect,
+}) => {
 	return (
 		<div
 			style={{
@@ -31,19 +31,19 @@ const TabPanel = () => {
 						key="btn1"
 						icon={<OrderedListOutlined />}
 						shade={selectedButton === 'btn1' ? '#444' : '#ccc'}
-						onClick={() => handleButtonClick('btn1')}
+						onClick={() => onButtonSelect('btn1')}
 					/>,
 					<GreyButton
 						key="btn2"
 						icon={<MenuOutlined />}
 						shade={selectedButton === 'btn2' ? '#444' : '#ccc'}
-						onClick={() => handleButtonClick('btn2')}
+						onClick={() => onButtonSelect('btn2')}
 					/>,
 					<GreyButton
 						key="btn3"
 						icon={<TeamOutlined />}
 						shade={selectedButton === 'btn3' ? '#444' : '#ccc'}
-						onClick={() => handleButtonClick('btn3')}
+						onClick={() => onButtonSelect('btn3')}
 					/>,
 				]}
 				align="16px"
@@ -53,7 +53,7 @@ const TabPanel = () => {
 				key="rightBtn"
 				icon={<UserOutlined />}
 				shade={selectedButton === 'rightBtn' ? '#444' : '#ccc'}
-				onClick={() => handleButtonClick('rightBtn')}
+				onClick={() => onButtonSelect('rightBtn')}
 				style={{ marginLeft: 'auto' }}
 			/>
 		</div>
