@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+$ZK_HOME/bin/zkServer.sh stop $ZK_HOME/conf/zookeeper.cfg

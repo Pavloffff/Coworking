@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react'
 import TabPanel from './TabPanel'
+import { Typography } from 'antd'
+import SubmenuList from '../lists/SubmenuList'
+
+const { Title } = Typography
 
 const ItemsPanel = () => {
 	const [selectedButton, setSelectedButton] = useState('btn1')
@@ -45,7 +49,13 @@ const ItemsPanel = () => {
 					color: '#444',
 				}}
 			>
-				{selectedButton}
+				{selectedButton == 'btn1' ? (
+					<div>
+						<SubmenuList title="Переписки" />
+					</div>
+				) : (
+					'2143324'
+				)}
 			</div>
 			<div style={{ width: '100%' }}>
 				<TabPanel

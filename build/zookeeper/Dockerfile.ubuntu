@@ -1,0 +1,17 @@
+ARG OPENJDK_NAME
+ARG OPENJDK_TAG
+FROM $OPENJDK_NAME:$OPENJDK_TAG
+
+ARG ZOOKEEPER_URL
+ARG ZOOKEEPER_PACKAGE
+ARG ZOOKEEPER_HOME=/opt/zookeeper
+ENV ZOOKEEPER_HOME=$ZOOKEEPER_HOME PATH=$PATH:$ZOOKEEPER_HOME/bin
+WORKDIR $ZOOKEEPER_HOME
+
+RUN wget $ZOOKEEPER_URL --no-check-certificate
+RUN tar --strip-components=1 -xvf $ZOOKEEPER_PACKAGE
+RUN rm $ZOOKEEPER_PACKAGE
+
+COPY shutdown_zookeeper ./bin
+COPY zookeeper.cfg ./conf/zookeeper.cfg
+ENTRYPOINT zkServer.sh start-foreground ./conf/zookeeper.cfg

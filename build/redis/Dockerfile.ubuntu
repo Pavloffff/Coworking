@@ -1,0 +1,15 @@
+ARG REGISTRY
+ARG PARENT_IMAGE
+FROM $REGISTRY/$PARENT_IMAGE
+
+RUN apt update \
+ && apt install -y redis \
+ && apt clean \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY ./entrypoint.sh  /entrypoint.sh
+COPY --chown=redis:redis ./redis.conf /etc/redis.conf
+
+EXPOSE 6379
+
+ENTRYPOINT ["/bin/bash", "-c", "/entrypoint.sh"]

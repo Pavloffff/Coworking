@@ -1,0 +1,14 @@
+ARG UBUNTU_NAME
+ARG UBUNTU_TAG
+FROM $UBUNTU_NAME:$UBUNTU_TAG
+
+ARG JDK_URL
+ENV JAVA_HOME /opt/openjdk
+ENV PATH $JAVA_HOME/bin:$PATH
+
+RUN curl $JDK_URL -o /tmp/openjdk.tar.gz --insecure \
+    && mkdir -p $JAVA_HOME && tar -xf /tmp/openjdk.tar.gz -C $JAVA_HOME --strip-components 1 && rm /tmp/openjdk.tar.gz
+
+RUN java --version && javac --version
+
+CMD ["java", "--version"]
