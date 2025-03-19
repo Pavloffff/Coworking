@@ -88,3 +88,8 @@ if __name__ == '__main__':
     repository = ImagesRepository(config_path)
     repository.build_images()
     
+
+# docker build ./build/python/ \
+#     --build-arg UBUNTU_NAME="coworking-ubuntu" \
+#     --build-arg UBUNTU_TAG="1.0.0" \
+#     --file ./build/python/Dockerfile.ubuntu
