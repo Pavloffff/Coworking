@@ -3,9 +3,9 @@ ARG PARENT_IMAGE
 FROM $REGISTRY/$PARENT_IMAGE
 
 RUN apt update \
- && apt install -y redis \
- && apt clean \
- && rm -rf /var/lib/apt/lists/*
+RUN apt install -y redis \
+RUN apt clean \
+RUN rm -rf /var/lib/apt/lists/*
 
 COPY ./entrypoint.sh  /entrypoint.sh
 COPY --chown=redis:redis ./redis.conf /etc/redis.conf

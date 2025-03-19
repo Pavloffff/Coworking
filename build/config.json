@@ -68,12 +68,8 @@
 			"name": "coworking-python",
 			"tag": "1.0.0",
 			"dockerfile": "Dockerfile.ubuntu",
-			"root": "openjdk",
-			"args": {
-				"PYTHON_URL": "https://www.python.org/ftp/python/3.11.3/Python-3.11.3.tgz",
-				"PYTHON_PACKAGE": "Python-3.11.3.tgz",
-				"COMPILED_PYTHON": "Python-3.11.3"
-			},
+			"root": "python",
+			"args": {},
 			"depends": ["ubuntu"]
 		}
 	}

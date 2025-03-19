@@ -4,24 +4,17 @@ FROM $UBUNTU_NAME:$UBUNTU_TAG
 
 WORKDIR /opt
 
-ARG PYTHON_URL
-ARG PYTHON_PACKAGE
-ARG COMPILED_PYTHON
+RUN apt update
+RUN apt install -y python3.11 python3.11-distutils
 
-RUN wget --no-check-certificate $PYTHON_URL && \
-  tar -xzvf $PYTHON_PACKAGE && \
-  rm -rf $PYTHON_PACKAGE
+RUN wget https://bootstrap.pypa.io/get-pip.py
+RUN python3.11 get-pip.py
 
-ARG COMPILED_PYTHON_PATH=/opt/$COMPILED_PYTHON
-ENV PATH="$COMPILED_PYTHON_PATH/bin:$PATH"
+RUN python3.11 -m pip install --upgrade pip
 
-COPY common/pip.conf /etc/pip.conf
-RUN $COMPILED_PYTHON_PATH/bin/python3.11 -m pip install --upgrade pip
-
-RUN apt update \
-    && apt -y install sqlite3 \
-    && apt clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt update
+RUN apt install -y sqlite3
+RUN apt clean
+RUN rm -rf /var/lib/apt/lists/*
 
 WORKDIR /
-

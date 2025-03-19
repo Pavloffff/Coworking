@@ -1,5 +1,3 @@
-# Заменить wait-for-it.sh на тот что в veseles был
-
 import docker
 import json
 
