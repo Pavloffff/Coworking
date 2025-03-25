@@ -1,24 +1,54 @@
 version: '3.8'
 
 services:
-  zookeeper:
+  coworking-servers-configurator:
+    build:
+      - context: source/servers_configurator/python/servers_configurator
+      - dockerfile: source/servers_configurator/python/Dockerfile
+    depends_on:
+      - coworking-kafka
+    ports:
+      - '8000:80'
+    networks:
+      - coworking-network
+
+  coworking-database-configurator:
+    build:
+      - context: source/database_configurator/python/database_configurator
+      - dockerfile: source/database_configurator/python/Dockerfile
+    depends_on:
+      - coworking-kafka
+    ports:
+      - '8001:80'
+    networks:
+      - coworking-network
+
+  coworking-kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - coworking-zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - '9092:9092'
+    networks:
+      - coworking-network
+
+  coworking-zookeeper:
+    image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
-    image: coworking-zookeeper:1.0.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
       - '2181:2181'
     networks:
       - coworking-network
 
-  kafka:
-    container_name: kafka
-    image: coworking-kafka:1.0.0
-    ports:
-      - '9092:9092'
-    depends_on:
-      - zookeeper
-    networks:
-      - coworking-network
-
 networks:
   coworking-network:
-    driver: host
+    driver: bridge
