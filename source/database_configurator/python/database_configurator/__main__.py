@@ -8,11 +8,11 @@ def main():
         host=_config.KAFKA_HOST,
         port=_config.KAFKA_PORT,
         group_id=_config.KAFKA_GROUP_ID,
-        topic='database_topic'
+        topic='coworking_database_topic'
     )
     for msg in reader.listen():
         decoded = msg.value.decode(reader._codec)
-        _logger.info(f"Получено сообщение: {decoded}")
+        _logger.error(f"Получено сообщение: {decoded}")
 
 if __name__ == "__main__":
     main()

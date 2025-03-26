@@ -3,3 +3,7 @@ betterlogging==1.0.0
 pydantic~=2.10.2
 pydantic_core~=2.27.1
 pydantic-settings==2.6.1
+fastapi==0.115.5
+starlette~=0.41.3
+sentry-sdk==2.19.0
+uvicorn==0.32.1
