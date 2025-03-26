@@ -5,4 +5,4 @@ logging.basic_colorized_config(
     level=logging.DEBUG,
     format="%(asctime)s - [%(levelname)s] -  %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 )
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)

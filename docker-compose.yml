@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   coworking-servers-configurator:
-    build:
-      - context: source/servers_configurator/python/servers_configurator
-      - dockerfile: source/servers_configurator/python/Dockerfile
+    build: 'source/servers_configurator/python'
     depends_on:
       - coworking-kafka
     ports:
@@ -13,9 +11,7 @@ services:
       - coworking-network
 
   coworking-database-configurator:
-    build:
-      - context: source/database_configurator/python/database_configurator
-      - dockerfile: source/database_configurator/python/Dockerfile
+    build: 'source/database_configurator/python'
     depends_on:
       - coworking-kafka
     ports:
@@ -31,7 +27,8 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://coworking-kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
       - '9092:9092'
