@@ -12,5 +12,6 @@ class Config(BaseSettings):
     KAFKA_GROUP_ID: str = 'coworking-postgres-group'
     KAFKA_AUTO_OFFSET_RESET: str = 'earliest'
     KAFKA_ENABLE_AUTO_COMMIT: bool = True
+    DATABASE_URL: str = 'postgresql://postgres:mysecretpassword@coworking-database:5432/coworking'
 
 _config = Config()

@@ -10,6 +10,7 @@ services:
       - '8000:80'
     networks:
       - coworking-network
+    restart: always
 
   coworking-database-configurator:
     build: 'source/database_configurator/python'
@@ -20,6 +21,7 @@ services:
       - '8001:80'
     networks:
       - coworking-network
+    restart: always
 
   coworking-kafka:
     image: confluentinc/cp-kafka:latest
@@ -27,7 +29,7 @@ services:
       - coworking-zookeeper
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: coworking-zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://coworking-kafka:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -35,6 +37,7 @@ services:
       - '9092:9092'
     networks:
       - coworking-network
+    restart: always
 
   coworking-zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -45,7 +48,8 @@ services:
       - '2181:2181'
     networks:
       - coworking-network
-  
+    restart: always
+
   coworking-database:
     image: postgres:17
     environment:
@@ -53,11 +57,13 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - '5433:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data      
+      - postgres_data:/var/lib/postgresql/data
+      - ./source/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - coworking-network  
+      - coworking-network
+    restart: always
 
 volumes:
   postgres_data:
