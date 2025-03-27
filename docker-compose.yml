@@ -5,6 +5,7 @@ services:
     build: 'source/servers_configurator/python'
     depends_on:
       - coworking-kafka
+      - coworking-database-configurator
     ports:
       - '8000:80'
     networks:
@@ -14,6 +15,7 @@ services:
     build: 'source/database_configurator/python'
     depends_on:
       - coworking-kafka
+      - coworking-database
     ports:
       - '8001:80'
     networks:
@@ -21,7 +23,6 @@ services:
 
   coworking-kafka:
     image: confluentinc/cp-kafka:latest
-    container_name: kafka
     depends_on:
       - coworking-zookeeper
     environment:
@@ -37,7 +38,6 @@ services:
 
   coworking-zookeeper:
     image: confluentinc/cp-zookeeper:latest
-    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -45,6 +45,22 @@ services:
       - '2181:2181'
     networks:
       - coworking-network
+  
+  coworking-database:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data      
+    networks:
+      - coworking-network  
+
+volumes:
+  postgres_data:
 
 networks:
   coworking-network:

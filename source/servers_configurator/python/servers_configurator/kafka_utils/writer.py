@@ -14,9 +14,9 @@ class Writer:
         self._initial_timeout = settings.initial_timeout
         self._retry_timeout = settings.retry_timeout
         self._codec = 'utf-8'
-        self._connect_producer()
+        self._connect()
 
-    def _connect_producer(self):
+    def _connect(self):
         while True:
             try:
                 _logger.debug(f"Attempt to connect to Kafka {self._host}:{self._port} ...")
@@ -39,5 +39,5 @@ class Writer:
                 break
             except KafkaError as e:
                 _logger.error(f"Kafka send error: {e}")
-                self._connect_producer()
+                self._connect()
                 time.sleep(self._retry_timeout)

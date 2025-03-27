@@ -3,3 +3,5 @@ betterlogging==1.0.0
 pydantic~=2.10.2
 pydantic_core~=2.27.1
 pydantic-settings==2.6.1
+sqlalchemy==2.0.30
+alembic==1.13.1
