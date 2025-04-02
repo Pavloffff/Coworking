@@ -1,4 +1,4 @@
--- DROP SCHEMA public;
+DROP SCHEMA public;
 
 CREATE SCHEMA public AUTHORIZATION postgres;
 -- public."user" определение
@@ -13,6 +13,7 @@ CREATE TABLE public."user" (
 	"name" varchar NOT NULL,
 	tag int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
 	password_hash varchar NOT NULL,
+	password_salt varchar NOT NULL,
 	CONSTRAINT user_pk PRIMARY KEY (user_id),
 	CONSTRAINT user_unique UNIQUE (tag)
 );

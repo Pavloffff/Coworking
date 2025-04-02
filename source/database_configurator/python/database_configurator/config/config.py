@@ -1,7 +1,6 @@
 import os
 
 from dataclasses import dataclass
-from pathlib import Path
 
 from database_configurator.config.kafka_config import KafkaConfig
 from database_configurator.config.database_configurator_config import DatabaseConfiguratorConfig

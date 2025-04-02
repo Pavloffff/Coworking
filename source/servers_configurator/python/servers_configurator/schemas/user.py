@@ -6,4 +6,5 @@ class User(BaseModel):
     name: str
     tag: int
     password_hash: str
+    password_salt: str
     avatar_url: str
