@@ -5,14 +5,16 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from servers_configurator.api import api_router
 from servers_configurator.logger import _logger
-from servers_configurator.config import _config
-from servers_configurator.kafka_utils import Writer, KafkaSettings
+from servers_configurator.config import Config
+from servers_configurator.kafka_utils import Writer
+
 
 class ServersConfigurator:
     def __init__(self):
+        self._config: Config = Config.load()
         self._app = FastAPI(
-            title=_config.SERVICE_NAME,
-            openapi_url=f'{_config.API_V1_STR}/openapi.json'
+            title=self._config.servers_configurator_config.service_name,
+            openapi_url=f'{self._config.servers_configurator_config.api_v1_str}/openapi.json'
         )
         self._app.add_middleware(
             CORSMiddleware,
@@ -21,28 +23,24 @@ class ServersConfigurator:
             allow_methods=["*"],
             allow_headers=["*"],
         )
-        self._app.include_router(api_router, prefix=_config.API_V1_STR)
-        self._app.add_event_handler('startup', self._startup_handler(self._app))
+        self._app.include_router(api_router, prefix=self._config.servers_configurator_config.api_v1_str)
+        self._app.add_event_handler('startup', self._startup_handler())
     
-    @staticmethod
-    def _startup_handler(app: FastAPI):
+    def _startup_handler(self):
         def startup() -> None:
             _logger.info("Running startup handler.")
-            ServersConfigurator._startup(app)
+            self._startup()
         return startup
 
-    @staticmethod
-    def _startup(app: FastAPI):
+    def _startup(self):
         kafka_writer = Writer(
-            KafkaSettings(
-                host=_config.KAFKA_HOST,
-                port=_config.KAFKA_PORT,
-                topic='coworking_database_topic',
-                initial_timeout=10,
-                retry_timeout=10
-            )
+            self._config.kafka_config
         )
-        app.state.writer = kafka_writer
+        self._app.state.writer = kafka_writer
 
     def run(self):
-        uvicorn.run(self._app, host=_config.HOST, port=_config.PORT)
+        uvicorn.run(
+            self._app, 
+            host=self._config.servers_configurator_config.host, 
+            port=self._config.servers_configurator_config.port
+        )

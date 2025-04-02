@@ -1,14 +1,42 @@
-from pydantic.v1 import BaseSettings
-from pydantic_settings import SettingsConfigDict
+import os
+
+from dataclasses import dataclass
+from pathlib import Path
+
+from servers_configurator.config.kafka_config import KafkaConfig
+from servers_configurator.config.servers_configurator_config import ServersConfiguratorConfig
+from servers_configurator.config.exceptions.improperly_configured import ImproperlyConfigured
 
 
-class Config(BaseSettings):
-    model_config = SettingsConfigDict(env_file='.env')
-    HOST: str = '0.0.0.0'
-    PORT: int = 80
-    KAFKA_HOST: str = 'coworking-kafka'
-    KAFKA_PORT: int = 9092
-    SERVICE_NAME: str = 'coworking-service-configurator'
-    API_V1_STR: str = '/api/v1'
+@dataclass
+class Config:
+    servers_configurator_config: ServersConfiguratorConfig
+    kafka_config: KafkaConfig
 
-_config = Config()
+    @classmethod
+    def load(cls):
+        return Config(
+            servers_configurator_config=ServersConfiguratorConfig(
+                host=cls.getenv('HOST'),
+                port=cls.getenv('PORT', int),
+                service_name=cls.getenv('SERVICE_NAME'),
+                api_v1_str=cls.getenv('API_V1_STR')
+            ),
+            kafka_config=KafkaConfig(
+                host=cls.getenv('KAFKA_HOST'),
+                port=cls.getenv('KAFKA_PORT', int),
+                topic=cls.getenv('KAFKA_DATABASE_TOPIC'),
+                initial_timeout=cls.getenv('KAFKA_INITIAL_TIMEOUT', int),
+                retry_timeout=cls.getenv('KAFKA_RETRY_TIMEOUT', int)
+            )
+        )
+    
+    @classmethod
+    def getenv(cls, var_name: str, cast_to=str):
+        try:
+            value = os.environ[var_name]
+            return cast_to(value)
+        except KeyError:
+            raise ImproperlyConfigured(var_name)
+        except ValueError:
+            raise ValueError(f"The value {var_name} can't be cast to {cast_to}.")

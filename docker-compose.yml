@@ -1,11 +1,22 @@
 version: '3.8'
 
+#TODO: вынести все в .env
 services:
   coworking-servers-configurator:
     build: 'source/servers_configurator/python'
     depends_on:
       - coworking-kafka
       - coworking-database-configurator
+    environment:
+      SERVICE_NAME: coworking-service-configurator
+      API_V1_STR: '/api/v1'
+      HOST: '0.0.0.0'
+      PORT: 80
+      KAFKA_HOST: coworking-kafka
+      KAFKA_PORT: 9092
+      KAFKA_DATABASE_TOPIC: coworking_database_topic
+      KAFKA_INITIAL_TIMEOUT: 20
+      KAFKA_RETRY_TIMEOUT: 10
     ports:
       - '8000:80'
     networks:
@@ -33,11 +44,15 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://coworking-kafka:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG4J_LOGGERS: 'kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO'
+      KAFKA_LOG4J_ROOT_LOGLEVEL: 'ERROR'
     ports:
       - '9092:9092'
     networks:
       - coworking-network
     restart: always
+    logging:
+      driver: 'none'
 
   coworking-zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -49,7 +64,8 @@ services:
     networks:
       - coworking-network
     restart: always
-
+    logging:
+      driver: 'none'
   coworking-database:
     image: postgres:17
     environment:

@@ -4,10 +4,11 @@ from kafka import KafkaProducer
 from kafka.errors import NoBrokersAvailable, KafkaError
 
 from servers_configurator.logger import _logger
-from servers_configurator.kafka_utils.settings import KafkaSettings
+from servers_configurator.config.kafka_config import KafkaConfig
+
 
 class Writer:
-    def __init__(self, settings: KafkaSettings):
+    def __init__(self, settings: KafkaConfig):
         self._host = settings.host
         self._port = settings.port
         self._topic = settings.topic

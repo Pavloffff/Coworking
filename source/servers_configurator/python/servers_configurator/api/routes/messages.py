@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from starlette.requests import Request
 
-from servers_configurator.models.message import Message
+from servers_configurator.schemas import Message
 
 router = APIRouter()
 
