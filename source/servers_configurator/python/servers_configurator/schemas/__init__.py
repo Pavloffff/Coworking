@@ -1,4 +1,3 @@
-from .message import Message
 from .server import Server as ServerScheme
 from .activity_channel import ActivityChannel as ActivityChannelScheme
 from .chat_item import ChatItem as ChatItemScheme
