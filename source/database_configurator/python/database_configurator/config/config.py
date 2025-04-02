@@ -19,8 +19,6 @@ class Config:
     def load(cls):
         return Config(
             database_configurator_config=DatabaseConfiguratorConfig(
-                host=cls.getenv('HOST'),
-                port=cls.getenv('PORT', int),
                 service_name=cls.getenv('SERVICE_NAME')
             ),
             kafka_config=KafkaConfig(
@@ -28,11 +26,16 @@ class Config:
                 port=cls.getenv('KAFKA_PORT', int),
                 topic=cls.getenv('KAFKA_DATABASE_TOPIC'),
                 auto_offset_reset=cls.getenv('KAFKA_AUTO_OFFSET_RESET'),
-                enable_auto_commit=cls.getenv('KAFKA_ENABLE_AUTO_COMMIT', bool),
+                enable_auto_commit=bool(cls.getenv('KAFKA_ENABLE_AUTO_COMMIT', int)),
+                group_id=cls.getenv('KAFKA_DATABASE_GROUP_ID'),
+                initial_timeout=cls.getenv('KAFKA_INITIAL_TIMEOUT')
             ),
             database_config=DatabaseConfig(
-                driver=cls.getenv('DATABASE_DRIVER'),
-                user=cls.getenv('DATABASE_USER') #TODO допилить
+                user=cls.getenv('DATABASE_USER'),
+                password=cls.getenv('DATABASE_PASSWORD'),
+                host=cls.getenv('DATABASE_HOST'),
+                port=cls.getenv('DATABASE_PORT', int),
+                database=cls.getenv('DATABASE_NAME')
             )
         )
     

@@ -8,12 +8,12 @@ from servers_configurator.config.kafka_config import KafkaConfig
 
 
 class Writer:
-    def __init__(self, settings: KafkaConfig):
-        self._host = settings.host
-        self._port = settings.port
-        self._topic = settings.topic
-        self._initial_timeout = settings.initial_timeout
-        self._retry_timeout = settings.retry_timeout
+    def __init__(self, config: KafkaConfig):
+        self._host = config.host
+        self._port = config.port
+        self._topic = config.topic
+        self._initial_timeout = config.initial_timeout
+        self._retry_timeout = config.retry_timeout
         self._codec = 'utf-8'
         self._connect()
 

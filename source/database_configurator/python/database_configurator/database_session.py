@@ -1,18 +1,18 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from database_configurator.database_settings import DatabaseSettings
+from database_configurator.config.database_config import DatabaseConfig
 
 
 class DatabaseSession:
-    def __init__(self, settings: DatabaseSettings):
+    def __init__(self, config: DatabaseConfig):
         self._engine = create_async_engine(
-            settings.url,
-            query_cache_size=settings.query_cache_size,
-            pool_size=settings.pool_size,
-            max_overflow=settings.max_overflow,
-            future=settings.future,
-            echo=settings.echo,
+            config.url,
+            query_cache_size=config.query_cache_size,
+            pool_size=config.pool_size,
+            max_overflow=config.max_overflow,
+            future=config.future,
+            echo=config.echo,
         )
         
     async def create(self):

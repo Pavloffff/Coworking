@@ -3,17 +3,18 @@ from kafka import KafkaConsumer
 from kafka.errors import NoBrokersAvailable
 
 from database_configurator.logger import _logger
-from database_configurator.kafka_utils.settings import KafkaSettings
+from database_configurator.config.kafka_config import KafkaConfig
+
 
 class Reader:
-    def __init__(self, settings: KafkaSettings):
-        self._host = settings.host
-        self._port = settings.port
-        self._topic = settings.topic
-        self._initial_timeout = settings.initial_timeout
-        self._auto_offset_reset = settings.auto_offset_reset
-        self._enable_auto_commit = settings.enable_auto_commit
-        self._group_id = settings.group_id
+    def __init__(self, config: KafkaConfig):
+        self._host = config.host
+        self._port = config.port
+        self._topic = config.topic
+        self._initial_timeout = config.initial_timeout
+        self._auto_offset_reset = config.auto_offset_reset
+        self._enable_auto_commit = config.enable_auto_commit
+        self._group_id = config.group_id
         self._codec = 'utf-8'
         self._consumer = self._connect()
         
