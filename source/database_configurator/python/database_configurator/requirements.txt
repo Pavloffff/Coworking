@@ -5,3 +5,4 @@ pydantic_core~=2.27.1
 pydantic-settings==2.6.1
 sqlalchemy==2.0.30
 psycopg2-binary==2.9.10
+asyncpg==0.29.0
