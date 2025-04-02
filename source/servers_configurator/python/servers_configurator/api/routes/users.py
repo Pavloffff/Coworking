@@ -23,7 +23,8 @@ async def add_user(request: Request, user: UserScheme):
 #TODO перед вызовом этого метода на фронте получить объект юзера с хешом и солью
 @router.put('/update')
 async def update_user(request: Request, user: UserScheme):
-    user.password_hash, user.password_salt = Hasher.hash(user.password_hash)
+    if user.password_hash != '':
+        user.password_hash, user.password_salt = Hasher.hash(user.password_hash)
     return Processor.process_action(
         request=request,
         model_name='user',

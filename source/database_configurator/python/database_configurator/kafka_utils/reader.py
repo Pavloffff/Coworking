@@ -1,4 +1,5 @@
 import time
+import json
 from kafka import KafkaConsumer
 from kafka.errors import NoBrokersAvailable
 
@@ -37,5 +38,5 @@ class Reader:
 
     def listen(self):
         for message in self._consumer:
-            decoded_message = message.value.decode(self._codec)
+            decoded_message = json.loads(message.value.decode(self._codec))
             yield decoded_message

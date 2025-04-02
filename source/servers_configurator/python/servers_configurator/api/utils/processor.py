@@ -8,7 +8,8 @@ class Processor:
                        model: BaseModel, method: str) -> dict:
         message = {
             'method': method,
-            model_name: model.model_dump()
+            'model': model_name,
+            'data': model.model_dump()
         }
         request.app.state.writer.write(message)
         return message

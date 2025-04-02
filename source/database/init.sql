@@ -11,7 +11,7 @@ CREATE TABLE public."user" (
 	user_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
 	avatar_url varchar NOT NULL,
 	"name" varchar NOT NULL,
-	tag int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	tag int8 NOT NULL,
 	password_hash varchar NOT NULL,
 	password_salt varchar NOT NULL,
 	CONSTRAINT user_pk PRIMARY KEY (user_id),
