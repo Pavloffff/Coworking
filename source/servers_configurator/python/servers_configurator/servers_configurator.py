@@ -7,6 +7,7 @@ from servers_configurator.api import api_router
 from servers_configurator.logger import _logger
 from servers_configurator.config import Config
 from servers_configurator.kafka_utils import Writer
+from servers_configurator.file_storage_utils import FileStorageClient
 
 
 class ServersConfigurator:
@@ -37,6 +38,10 @@ class ServersConfigurator:
             self._config.kafka_config
         )
         self._app.state.writer = kafka_writer
+        file_storage_client = FileStorageClient(
+            config=self._config.file_storage_config
+        )
+        self._app.state.file_storage_client = file_storage_client
 
     def run(self):
         uvicorn.run(

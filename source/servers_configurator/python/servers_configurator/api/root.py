@@ -5,6 +5,7 @@ from .routes import (
     activity_channels,
     chat_items,
     roles,
+    user_roles,
     text_channels,
     voice_channels
 )
@@ -18,3 +19,4 @@ api_router.include_router(chat_items)
 api_router.include_router(roles)
 api_router.include_router(text_channels)
 api_router.include_router(voice_channels)
+api_router.include_router(user_roles)

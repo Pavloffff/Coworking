@@ -1,12 +1,15 @@
 version: '3.8'
 
 #TODO: вынести все в .env
+#TODO: выпилить маппинг ненужных портов
+#TODO: переименоватьт postgres_data
 services:
   coworking-servers-configurator:
     build: 'source/servers_configurator/python'
     depends_on:
       - coworking-kafka
       - coworking-database-configurator
+      - coworking-file-storage
     environment:
       SERVICE_NAME: coworking-service-configurator
       API_V1_STR: '/api/v1'
@@ -17,6 +20,11 @@ services:
       KAFKA_DATABASE_TOPIC: coworking_database_topic
       KAFKA_INITIAL_TIMEOUT: 20
       KAFKA_RETRY_TIMEOUT: 10
+      FILE_STORAGE_HOST: coworking-file-storage
+      FILE_STORAGE_PORT: 9000
+      FILE_STORAGE_ACCESS_KEY: minioadmin
+      FILE_STORAGE_SECRET_KEY: minioadmin
+      FILE_STORAGE_BUCKET_NAME: coworking
     ports:
       - '8000:80'
     networks:
@@ -94,8 +102,20 @@ services:
       - coworking-network
     restart: always
 
+  coworking-file-storage:
+    image: minio/minio
+    volumes:
+      - file_storage_data:/data
+    ports:
+      - '9000:9000'
+    command: server /data
+    networks:
+      - coworking-network
+    restart: always
+
 volumes:
   postgres_data:
+  file_storage_data:
 
 networks:
   coworking-network:

@@ -1,9 +1,9 @@
 import os
 
 from dataclasses import dataclass
-from pathlib import Path
 
 from servers_configurator.config.kafka_config import KafkaConfig
+from servers_configurator.config.file_storage_config import FileStorageConfig
 from servers_configurator.config.servers_configurator_config import ServersConfiguratorConfig
 from servers_configurator.config.exceptions.improperly_configured import ImproperlyConfigured
 
@@ -12,6 +12,7 @@ from servers_configurator.config.exceptions.improperly_configured import Imprope
 class Config:
     servers_configurator_config: ServersConfiguratorConfig
     kafka_config: KafkaConfig
+    file_storage_config: FileStorageConfig
 
     @classmethod
     def load(cls):
@@ -28,6 +29,13 @@ class Config:
                 topic=cls.getenv('KAFKA_DATABASE_TOPIC'),
                 initial_timeout=cls.getenv('KAFKA_INITIAL_TIMEOUT', int),
                 retry_timeout=cls.getenv('KAFKA_RETRY_TIMEOUT', int)
+            ),
+            file_storage_config=FileStorageConfig(
+                host=cls.getenv('FILE_STORAGE_HOST'),
+                port=cls.getenv('FILE_STORAGE_PORT', int),
+                access_key=cls.getenv('FILE_STORAGE_ACCESS_KEY'),
+                secret_key=cls.getenv('FILE_STORAGE_SECRET_KEY'),
+                bucket_name=cls.getenv('FILE_STORAGE_BUCKET_NAME')
             )
         )
     

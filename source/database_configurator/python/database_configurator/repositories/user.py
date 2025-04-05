@@ -1,12 +1,10 @@
-from sqlalchemy import select, update, insert, delete, func
+from sqlalchemy import select, update, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database_configurator.logger import _logger
 from database_configurator.models import User
 from database_configurator.repositories.base import BaseRepository
 
 
-#TODO между нотификатором и конфигуратором + топик кафки
 class UserRepository(BaseRepository):
     @staticmethod
     async def insert(session: AsyncSession, data: dict):
@@ -26,18 +24,16 @@ class UserRepository(BaseRepository):
     @staticmethod
     async def update(session: AsyncSession, data: dict):
         query = select(User).where(User.user_id == data['user_id'])
-        user = await session.execute(query)
-        
-        if user.scalar_one_or_none() is None:
+        user = (await session.execute(query)).scalar_one_or_none()    
+        if user is None:
             return
-            
+
         stmt = (
             update(User)
             .where(User.user_id == data['user_id'])
             .values(
                 name=data['name'],
-                avatar_url=data['avatar_url'],
-                
+                avatar_url=data['avatar_url']
             )
         )
         if data['password_hash'] != '':
