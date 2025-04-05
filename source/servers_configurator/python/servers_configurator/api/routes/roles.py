@@ -7,7 +7,7 @@ from servers_configurator.api.utils import Processor
 router = APIRouter(prefix='/roles')
 
 @router.post('/add')
-def add_role(request: Request, model: RoleScheme):
+async def add_role(request: Request, model: RoleScheme):
     return Processor.process_action(
         request=request,
         model_name='role',
@@ -16,7 +16,7 @@ def add_role(request: Request, model: RoleScheme):
     )
 
 @router.put('/update')
-def update_role(request: Request, model: RoleScheme):
+async def update_role(request: Request, model: RoleScheme):
     return Processor.process_action(
         request=request,
         model_name='role',
@@ -25,7 +25,7 @@ def update_role(request: Request, model: RoleScheme):
     )
 
 @router.delete('/delete')
-def delete_role(request: Request, model: RoleScheme):
+async def delete_role(request: Request, model: RoleScheme):
     return Processor.process_action(
         request=request,
         model_name='role',

@@ -41,8 +41,3 @@ async def delete_user(request: Request, user: UserScheme):
         model=user,
         method='delete'
     )
-# Проверка пароля - в database_reader
-# def verify_password(stored_hash, stored_salt, password, iterations):
-#     salt = binascii.unhexlify(stored_salt)
-#     new_hash = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, iterations)
-#     return stored_hash == binascii.hexlify(new_hash).decode()

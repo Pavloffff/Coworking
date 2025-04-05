@@ -8,7 +8,7 @@ router = APIRouter(prefix='/user-roles')
 
 
 @router.post('/add')
-def add_user_role(request: Request, model: UserRoleScheme):
+async def add_user_role(request: Request, model: UserRoleScheme):
     return Processor.process_action(
         request=request,
         model_name='user_role',
@@ -17,7 +17,7 @@ def add_user_role(request: Request, model: UserRoleScheme):
     )
 
 @router.put('/update')
-def update_user_role(request: Request, model: UserRoleScheme):
+async def update_user_role(request: Request, model: UserRoleScheme):
     return Processor.process_action(
         request=request,
         model_name='user_role',
@@ -26,7 +26,7 @@ def update_user_role(request: Request, model: UserRoleScheme):
     )
 
 @router.delete('/delete')
-def delete_user_role(request: Request, model: UserRoleScheme):
+async def delete_user_role(request: Request, model: UserRoleScheme):
     return Processor.process_action(
         request=request,
         model_name='user_role',

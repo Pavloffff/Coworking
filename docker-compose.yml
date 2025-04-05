@@ -2,8 +2,34 @@ version: '3.8'
 
 #TODO: вынести все в .env
 #TODO: выпилить маппинг ненужных портов
-#TODO: переименоватьт postgres_data
+#TODO: переименовать postgres_data
 services:
+  coworking-database-reader:
+    build: 'source/database_reader/python'
+    depends_on:
+      - coworking-database
+      - coworking-file-storage
+    environment:
+      SERVICE_NAME: coworking-database-reader
+      API_V1_STR: '/api/v1'
+      HOST: '0.0.0.0'
+      PORT: 80
+      FILE_STORAGE_HOST: coworking-file-storage
+      FILE_STORAGE_PORT: 9000
+      FILE_STORAGE_ACCESS_KEY: minioadmin
+      FILE_STORAGE_SECRET_KEY: minioadmin
+      FILE_STORAGE_BUCKET_NAME: coworking
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: 1234
+      DATABASE_HOST: coworking-database
+      DATABASE_PORT: 5432
+      DATABASE_NAME: coworking
+    ports:
+      - '8001:80'
+    networks:
+      - coworking-network
+    restart: always
+
   coworking-servers-configurator:
     build: 'source/servers_configurator/python'
     depends_on:

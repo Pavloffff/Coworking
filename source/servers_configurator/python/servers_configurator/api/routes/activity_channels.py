@@ -7,7 +7,7 @@ from servers_configurator.api.utils import Processor
 router = APIRouter(prefix='/activity-channels')
 
 @router.post('/add')
-def add_activity_channel(request: Request, model: ActivityChannelScheme):
+async def add_activity_channel(request: Request, model: ActivityChannelScheme):
     return Processor.process_action(
         request=request,
         model_name='activity_channel',
@@ -16,7 +16,7 @@ def add_activity_channel(request: Request, model: ActivityChannelScheme):
     )
 
 @router.put('/update')
-def update_activity_channel(request: Request, model: ActivityChannelScheme):
+async def update_activity_channel(request: Request, model: ActivityChannelScheme):
     return Processor.process_action(
         request=request,
         model_name='activity_channel',
@@ -25,7 +25,7 @@ def update_activity_channel(request: Request, model: ActivityChannelScheme):
     )
 
 @router.delete('/delete')
-def delete_activity_channel(request: Request, model: ActivityChannelScheme):
+async def delete_activity_channel(request: Request, model: ActivityChannelScheme):
     return Processor.process_action(
         request=request,
         model_name='activity_channel',

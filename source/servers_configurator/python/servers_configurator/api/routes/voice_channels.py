@@ -8,7 +8,7 @@ router = APIRouter(prefix='/voice-channels')
 
 
 @router.post('/add')
-def add_voice_channel(request: Request, model: VoiceChannelScheme):
+async def add_voice_channel(request: Request, model: VoiceChannelScheme):
     return Processor.process_action(
         request=request,
         model_name='voice_channel',
@@ -17,7 +17,7 @@ def add_voice_channel(request: Request, model: VoiceChannelScheme):
     )
 
 @router.put('/update')
-def update_voice_channel(request: Request, model: VoiceChannelScheme):
+async def update_voice_channel(request: Request, model: VoiceChannelScheme):
     return Processor.process_action(
         request=request,
         model_name='voice_channel',
@@ -26,7 +26,7 @@ def update_voice_channel(request: Request, model: VoiceChannelScheme):
     )
 
 @router.delete('/delete')
-def delete_voice_channel(request: Request, model: VoiceChannelScheme):
+async def delete_voice_channel(request: Request, model: VoiceChannelScheme):
     return Processor.process_action(
         request=request,
         model_name='voice_channel',

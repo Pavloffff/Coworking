@@ -9,7 +9,7 @@ router = APIRouter(prefix='/servers')
 
 
 @router.post('/add')
-def add_server(request: Request, server: ServerScheme):
+async def add_server(request: Request, server: ServerScheme):
     return Processor.process_action(
         request=request,
         model_name='server',
@@ -19,7 +19,7 @@ def add_server(request: Request, server: ServerScheme):
 
 
 @router.put('/update')
-def update_server(request: Request, server: ServerScheme):
+async def update_server(request: Request, server: ServerScheme):
     return Processor.process_action(
         request=request,
         model_name='server',
@@ -29,7 +29,7 @@ def update_server(request: Request, server: ServerScheme):
 
 
 @router.delete('/delete')
-def delete_server(request: Request, server: ServerScheme):
+async def delete_server(request: Request, server: ServerScheme):
     return Processor.process_action(
         request=request,
         model_name='server',

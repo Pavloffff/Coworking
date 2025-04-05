@@ -8,7 +8,7 @@ router = APIRouter(prefix='/text-channels')
 
 
 @router.post('/add')
-def add_text_channel(request: Request, model: TextChannelScheme):
+async def add_text_channel(request: Request, model: TextChannelScheme):
     return Processor.process_action(
         request=request,
         model_name='text_channel',
@@ -17,7 +17,7 @@ def add_text_channel(request: Request, model: TextChannelScheme):
     )
 
 @router.put('/update')
-def update_text_channel(request: Request, model: TextChannelScheme):
+async def update_text_channel(request: Request, model: TextChannelScheme):
     return Processor.process_action(
         request=request,
         model_name='text_channel',
@@ -26,7 +26,7 @@ def update_text_channel(request: Request, model: TextChannelScheme):
     )
 
 @router.delete('/delete')
-def delete_text_channel(request: Request, model: TextChannelScheme):
+async def delete_text_channel(request: Request, model: TextChannelScheme):
     return Processor.process_action(
         request=request,
         model_name='text_channel',
