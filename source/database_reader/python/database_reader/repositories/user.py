@@ -10,8 +10,10 @@ class UserRepository:
         return (await session.execute(stmt)).scalar_one_or_none()
     
     @staticmethod
-    async def get_all(session: AsyncSession, name='', tag=-1) -> list[User]:
+    async def get_all(session: AsyncSession, email='', name='', tag=-1) -> list[User]:
         stmt = select(User)
+        if email != '':
+            stmt = stmt.where(User.email == email)
         if name != '':
             stmt = stmt.where(User.name == name)
         if tag >= 0:

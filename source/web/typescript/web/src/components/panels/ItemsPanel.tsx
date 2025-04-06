@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react'
 import TabPanel from './TabPanel'
-import { Typography } from 'antd'
 import SubmenuList from '../lists/SubmenuList'
-
-const { Title } = Typography
 
 const ItemsPanel = () => {
 	const [selectedButton, setSelectedButton] = useState('btn1')

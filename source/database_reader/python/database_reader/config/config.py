@@ -21,7 +21,11 @@ class Config:
                 host=cls.getenv('HOST'),
                 port=cls.getenv('PORT', int),
                 service_name=cls.getenv('SERVICE_NAME'),
-                api_v1_str=cls.getenv('API_V1_STR')
+                api_v1_str=cls.getenv('API_V1_STR'),
+                jwt_secret_key=cls.getenv('JWT_SECRET_KEY'),
+                jwt_refresh_secret_key=cls.getenv('JWT_REFRESH_SECRET_KEY'),
+                access_token_expire_minutes=cls.getenv('ACCESS_TOKEN_EXPIRE_MINUTES', int),
+                refresh_token_expire_minutes=cls.getenv('REFRESH_TOKEN_EXPIRE_MINUTES', int)
             ),
             database_config=DatabaseConfig(
                 user=cls.getenv('DATABASE_USER'),

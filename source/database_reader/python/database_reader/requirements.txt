@@ -11,3 +11,4 @@ minio==7.2.15
 sqlalchemy==2.0.30
 psycopg2-binary==2.9.10
 asyncpg==0.29.0
+python-jose==3.4.0

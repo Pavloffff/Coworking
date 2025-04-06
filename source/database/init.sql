@@ -14,8 +14,10 @@ CREATE TABLE public."user" (
 	tag int8 NOT NULL,
 	password_hash varchar NOT NULL,
 	password_salt varchar NOT NULL,
+	email varchar NOT NULL,
 	CONSTRAINT user_pk PRIMARY KEY (user_id),
-	CONSTRAINT user_unique UNIQUE (tag)
+	CONSTRAINT user_unique UNIQUE (tag),
+	CONSTRAINT user_unique_1 UNIQUE (email)
 );
 
 

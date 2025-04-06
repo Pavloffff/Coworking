@@ -12,6 +12,7 @@ class UserRepository(BaseRepository):
         tag = ((await session.execute(tag_query)).scalar_one_or_none() or 0) + 1 
         user = User(
             name=data['name'],
+            email=data['email'],
             avatar_url=data['avatar_url'],
             tag=tag,
             password_hash=data['password_hash'],
@@ -33,6 +34,7 @@ class UserRepository(BaseRepository):
             .where(User.user_id == data['user_id'])
             .values(
                 name=data['name'],
+                email=data['email'],
                 avatar_url=data['avatar_url']
             )
         )

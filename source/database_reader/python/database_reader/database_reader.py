@@ -8,6 +8,7 @@ from database_reader.logger import _logger
 from database_reader.config import Config
 from database_reader.file_storage_utils import FileStorageClient
 from database_reader.database_session import DatabaseSession
+from database_reader.redis_utils import RedisClient
 
 class DatabaseReader:
     def __init__(self):
@@ -33,6 +34,7 @@ class DatabaseReader:
         return startup
 
     def _startup(self):
+        self._app.state.config = self._config
         file_storage_client = FileStorageClient(
             config=self._config.file_storage_config
         )
@@ -41,6 +43,8 @@ class DatabaseReader:
             config=self._config.database_config
         )
         self._app.state.database_session = database_session
+        redis_client = RedisClient()
+        self._app.state.redis_client = redis_client
 
     def run(self):
         uvicorn.run(
