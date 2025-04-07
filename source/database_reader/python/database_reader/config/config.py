@@ -25,7 +25,8 @@ class Config:
                 jwt_secret_key=cls.getenv('JWT_SECRET_KEY'),
                 jwt_refresh_secret_key=cls.getenv('JWT_REFRESH_SECRET_KEY'),
                 access_token_expire_minutes=cls.getenv('ACCESS_TOKEN_EXPIRE_MINUTES', int),
-                refresh_token_expire_minutes=cls.getenv('REFRESH_TOKEN_EXPIRE_MINUTES', int)
+                refresh_token_expire_minutes=cls.getenv('REFRESH_TOKEN_EXPIRE_MINUTES', int),
+                password_hashing_iterations=cls.getenv('PASSWORD_HASHING_ITERATIONS', int)
             ),
             database_config=DatabaseConfig(
                 user=cls.getenv('DATABASE_USER'),

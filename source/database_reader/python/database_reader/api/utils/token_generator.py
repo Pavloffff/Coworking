@@ -3,10 +3,9 @@ from typing import Union, Any
 from jose import jwt
 
 
-#TODO доделать
 class TokenGenerator:
     @staticmethod
-    def access(
+    def generate(
         subject: Union[str, Any], 
         expires_delta: int = None, 
         expire: int = 20, 
@@ -20,3 +19,4 @@ class TokenGenerator:
         to_encode = {"exp": expires_delta, "sub": str(subject)}
         encoded_jwt = jwt.encode(to_encode, secret_key, "HS256")
         return encoded_jwt
+    

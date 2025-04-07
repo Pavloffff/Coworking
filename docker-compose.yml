@@ -4,18 +4,18 @@ version: '3.8'
 #TODO: выпилить маппинг ненужных портов
 #TODO: переименовать postgres_data
 services:
-  coworking-web:
-    build: source/web/typescript
-    depends_on:
-      - coworking-servers-configurator
-      - coworking-database-reader
-    environment:
-      SERVICE_NAME: coworking-web
-    ports:
-      - 80:5173
-    networks:
-      - coworking-network
-    restart: always
+  # coworking-web:
+  #   build: source/web/typescript
+  #   depends_on:
+  #     - coworking-servers-configurator
+  #     - coworking-database-reader
+  #   environment:
+  #     SERVICE_NAME: coworking-web
+  #   ports:
+  #     - 80:5173
+  #   networks:
+  #     - coworking-network
+  #   restart: always
 
   coworking-database-reader:
     build: 'source/database_reader/python'
@@ -41,6 +41,7 @@ services:
       JWT_REFRESH_SECRET_KEY: qwoerqyhowirhq
       ACCESS_TOKEN_EXPIRE_MINUTES: 1
       REFRESH_TOKEN_EXPIRE_MINUTES: 2
+      PASSWORD_HASHING_ITERATIONS: 100000
     ports:
       - '8001:80'
     networks:

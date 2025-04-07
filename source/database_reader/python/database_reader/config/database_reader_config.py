@@ -11,3 +11,4 @@ class ServersConfiguratorConfig:
     jwt_refresh_secret_key: str
     access_token_expire_minutes: int
     refresh_token_expire_minutes: int
+    password_hashing_iterations: int
