@@ -4,20 +4,22 @@ from dataclasses import dataclass
 
 from database_reader.config.file_storage_config import FileStorageConfig
 from database_reader.config.database_config import DatabaseConfig
-from database_reader.config.database_reader_config import ServersConfiguratorConfig
+from database_reader.config.database_reader_config import DatabaseReaderConfig
+from database_reader.config.redis_config import RedisConfig
 from database_reader.config.exceptions.improperly_configured import ImproperlyConfigured
 
 
 @dataclass
 class Config:
-    database_reader_config: ServersConfiguratorConfig
+    database_reader_config: DatabaseReaderConfig
     database_config: DatabaseConfig
     file_storage_config: FileStorageConfig
+    redis_config: RedisConfig
 
     @classmethod
     def load(cls):
         return Config(
-            database_reader_config=ServersConfiguratorConfig(
+            database_reader_config=DatabaseReaderConfig(
                 host=cls.getenv('HOST'),
                 port=cls.getenv('PORT', int),
                 service_name=cls.getenv('SERVICE_NAME'),
@@ -41,6 +43,12 @@ class Config:
                 access_key=cls.getenv('FILE_STORAGE_ACCESS_KEY'),
                 secret_key=cls.getenv('FILE_STORAGE_SECRET_KEY'),
                 bucket_name=cls.getenv('FILE_STORAGE_BUCKET_NAME')
+            ),
+            redis_config=RedisConfig(
+                host=cls.getenv('REDIS_HOST'),
+                port=cls.getenv('REDIS_PORT', int),
+                password=cls.getenv('REDIS_PASSWORD'),
+                db=cls.getenv('REDIS_DB', int)
             )
         )
     

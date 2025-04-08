@@ -44,7 +44,9 @@ class DatabaseReader:
             config=self._config.database_config
         )
         self._app.state.database_session = database_session
-        redis_client = RedisClient()
+        redis_client = RedisClient(
+            config=self._config.redis_config
+        )
         self._app.state.redis_client = redis_client
 
     def run(self):

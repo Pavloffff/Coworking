@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class ServersConfiguratorConfig:
+class DatabaseReaderConfig:
     host: str
     port: int
     service_name: str

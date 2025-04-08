@@ -42,6 +42,10 @@ services:
       ACCESS_TOKEN_EXPIRE_MINUTES: 1
       REFRESH_TOKEN_EXPIRE_MINUTES: 20
       PASSWORD_HASHING_ITERATIONS: 100000
+      REDIS_HOST: coworking-redis
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_DB: 0
     ports:
       - '8001:80'
     networks:
@@ -157,9 +161,22 @@ services:
       - coworking-network
     restart: always
 
+  coworking-redis:
+    image: redis:latest
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=${REDIS_PORT}
+    networks:
+      - coworking-network
+    restart: always
+
 volumes:
   postgres_data:
   file_storage_data:
+  redis_data:
 
 networks:
   coworking-network:

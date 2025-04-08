@@ -66,7 +66,7 @@ async def login(request: Request, user: UserScheme) -> AuthResponse:
         expire=config.database_reader_config.refresh_token_expire_minutes,
         secret_key=config.database_reader_config.jwt_refresh_secret_key    
     )
-    redis_client.put(
+    await redis_client.put(
         user.email,
         {'refresh_token': refresh_token}    # not_a_secret
     )
@@ -97,7 +97,7 @@ async def refresh_token(
     except HTTPException:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
     
-    stored_data = redis_client.get(email)
+    stored_data = await redis_client.get(email)
     if not stored_data or stored_data.get("refresh_token") != data.refresh_token:
         raise HTTPException(status_code=401, detail="Refresh token revoked")
     
@@ -111,7 +111,7 @@ async def refresh_token(
         expire=config.database_reader_config.refresh_token_expire_minutes,
         secret_key=config.database_reader_config.jwt_refresh_secret_key    
     )
-    redis_client.put(email, {"refresh_token": new_refresh_token})
+    await redis_client.put(email, {"refresh_token": new_refresh_token})
     
     return AuthResponse(
         email=email,
