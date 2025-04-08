@@ -2,7 +2,6 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
 
 from database_reader.api import api_router
 from database_reader.logger import _logger
@@ -10,6 +9,7 @@ from database_reader.config import Config
 from database_reader.file_storage_utils import FileStorageClient
 from database_reader.database_session import DatabaseSession
 from database_reader.redis_utils import RedisClient
+
 
 class DatabaseReader:
     def __init__(self):
