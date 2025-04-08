@@ -1,9 +1,10 @@
+import { AxiosResponse } from 'axios'
 import databaseReaderApiClient from '../databaseReaderClient'
 import serversConfiguratorApiClient from '../serversConfiguratorClient'
-import { User, AddUserResponse } from '../types'
+import { User, AddUserResponse, AuthResponse } from '../types'
 
 export const authApi = {
-	login: (request: User): Promise<boolean> => {
+	login: (request: User): Promise<AxiosResponse<AuthResponse>> => {
 		return databaseReaderApiClient.post('/users/login', {
 			...request,
 			user_id: request.user_id || 0,
@@ -14,7 +15,15 @@ export const authApi = {
 		})
 	},
 
-	register: (request: User): Promise<AddUserResponse> => {
+	refresh: (request: AuthResponse): Promise<AxiosResponse<AuthResponse>> => {
+		return databaseReaderApiClient.post('/users/refresh', {
+			...request,
+			email: request.email || '',
+			auth: request.auth || false,
+		})
+	},
+
+	register: (request: User): Promise<AxiosResponse<AddUserResponse>> => {
 		return serversConfiguratorApiClient.post('/users/add', {
 			...request,
 			tag: request.tag || 0,

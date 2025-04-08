@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Form, Input, Button, Typography, Tabs } from 'antd'
+import { Form, Input, Button, Typography, Tabs, message } from 'antd'
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons'
 import { authApi } from '../api/auth/authApi'
+import Cookies from 'js-cookie'
+import { AuthResponse, User } from '../api/types'
+import { AxiosError, AxiosResponse } from 'axios'
 
 const { Title } = Typography
 const { TabPane } = Tabs
@@ -19,68 +22,103 @@ type RegisterFormValues = {
 	confirmPassword: string
 }
 
+const MAX_RETRY_ATTEMPTS = 10
+const RETRY_DELAY = 100
+
 const Login = () => {
 	const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
-	const [loading, setLoading] = useState(false)
+	const [loginLoading, setLoginLoading] = useState(false)
+	const [registerLoading, setRegisterLoading] = useState(false)
 	const navigate = useNavigate()
+
+	const handleAuthSuccess = (response: AxiosResponse<AuthResponse>) => {
+		const { access_token, refresh_token } = response.data
+		Cookies.set('access_token', access_token, { expires: 1 })
+		Cookies.set('refresh_token', refresh_token, { expires: 7 })
+
+		navigate('/')
+	}
+
+	const handleRetryLogin = async (user: User): Promise<boolean> => {
+		let attempts = 0
+		while (attempts < MAX_RETRY_ATTEMPTS) {
+			try {
+				const response = await authApi.login(user)
+
+				handleAuthSuccess(response)
+				return true
+			} catch (error) {
+				console.log(error)
+
+				attempts++
+				if (attempts < MAX_RETRY_ATTEMPTS) {
+					await new Promise(resolve => setTimeout(resolve, RETRY_DELAY))
+				}
+			}
+		}
+		return false
+	}
 
 	const handleLoginFinish = async (values: LoginFormValues) => {
 		try {
-			setLoading(true)
-			const user = {
+			setLoginLoading(true)
+			const user: User = {
 				email: values.email,
 				password_hash: values.password,
 				password_salt: '',
-				user_id: 0,
 				name: '',
 				tag: 0,
 				avatar_url: '',
 			}
-			const success = await authApi.login(user)
-			if (success) {
-				navigate('/')
+
+			try {
+				const response = await authApi.login(user)
+				handleAuthSuccess(response)
+			} catch (error) {
+				if (error instanceof AxiosError && error.response?.status === 404) {
+					try {
+						const refreshResponse = await authApi.refresh({
+							access_token: Cookies.get('access_token') || '',
+							refresh_token: Cookies.get('refresh_token') || '',
+						})
+						handleAuthSuccess(refreshResponse)
+					} catch (refreshError) {
+						console.log(refreshError)
+						Cookies.remove('access_token')
+						Cookies.remove('refresh_token')
+						message.error('Сессия истекла, войдите заново')
+					}
+				} else {
+					message.error('Ошибка авторизации')
+				}
 			}
-		} catch (error) {
-			console.log(error)
 		} finally {
-			setLoading(false)
+			setLoginLoading(false)
 		}
 	}
 
 	const handleRegisterFinish = async (values: RegisterFormValues) => {
 		try {
-			setLoading(true)
-			const user = {
+			setRegisterLoading(true)
+			const user: User = {
+				name: values.name,
 				email: values.email,
 				password_hash: values.password,
 				password_salt: '',
-				user_id: 0,
-				name: values.name,
 				tag: 0,
 				avatar_url: '',
 			}
+
 			await authApi.register(user)
-			let success = false
-			let attempts = 0
-			const maxAttempts = 10
-			const delay = 100 // 0.1 секунды
+			const loginSuccess = await handleRetryLogin(user)
 
-			while (!success && attempts < maxAttempts) {
-				attempts++
-				success = await authApi.login(user)
-
-				if (!success) {
-					if (attempts < maxAttempts) {
-						await new Promise(resolve => setTimeout(resolve, delay))
-					}
-				} else {
-					navigate('/')
-				}
+			if (!loginSuccess) {
+				message.error('Не удалось войти после регистрации')
 			}
 		} catch (error) {
 			console.log(error)
 		} finally {
-			setLoading(false)
+			setRegisterLoading(false)
 		}
 	}
 
@@ -136,7 +174,7 @@ const Login = () => {
 								block
 								size="large"
 								style={{ height: 45, fontSize: 16 }}
-								loading={loading && activeTab === 'login'}
+								loading={loginLoading}
 							>
 								Войти
 							</Button>
@@ -220,7 +258,7 @@ const Login = () => {
 								block
 								size="large"
 								style={{ height: 45, fontSize: 16 }}
-								loading={loading && activeTab === 'register'}
+								loading={registerLoading}
 							>
 								Зарегистрироваться
 							</Button>

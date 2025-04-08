@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="grad1" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6A5ACD"/>
+      <stop offset="100%" stop-color="#00BFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="url(#grad1)" />
+  
+  <!-- Буква К -->
+  <text x="10" y="44" font-size="32" font-weight="bold" font-family="Segoe UI, sans-serif" fill="white">К</text>
+  
+  <!-- Минималистичный микрофон -->
+  <g transform="translate(34,16)">
+    <rect x="4" y="0" width="12" height="24" rx="6" fill="white"/>
+    <path d="M4 12 H0 C0 20 20 20 20 12 H16" fill="white"/>
+    <rect x="9" y="24" width="2" height="6" fill="white"/>
+    <path d="M6 32 H14" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -8,9 +8,12 @@ export interface User {
 	avatar_url?: string
 }
 
-// export interface LoginResponse {
-// 	result: boolean
-// }
+export interface AuthResponse {
+	access_token: string
+	refresh_token: string
+	email?: string
+	auth?: boolean
+}
 
 export interface AddUserResponse {
 	method: string
