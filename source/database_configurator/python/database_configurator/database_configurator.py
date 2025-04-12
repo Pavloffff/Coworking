@@ -29,9 +29,13 @@ class DatabaseConfigurator:
         model = message['model']
         method = message['method']
         data = message['data']
+        current_user = message['current_user']
         
         repository = RepositoriesFactory.get_repository(model)
         
+        if not repository.validate(session, method, current_user, data):
+            raise ValueError(f'Invalid user: {current_user}')
+
         action_methods = {
             'add': repository.insert,
             'update': repository.update,

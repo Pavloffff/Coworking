@@ -17,3 +17,8 @@ class BaseRepository(ABC):
     @abstractmethod
     async def delete(session: AsyncSession, data: dict):
         pass
+
+    @staticmethod
+    @abstractmethod
+    async def validate(session: AsyncSession, method: str, current_user: str, data: dict) -> bool:
+        pass

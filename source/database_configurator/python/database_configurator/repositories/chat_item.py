@@ -48,3 +48,7 @@ class ChatItemRepository(BaseRepository):
         stmt = delete(ChatItem).where(ChatItem.chat_item_id == data['chat_item_id'])
         await session.execute(stmt)
         await session.commit()
+
+    @staticmethod
+    async def validate(session: AsyncSession, method: str, current_user: str, data: dict) -> bool:
+        return True

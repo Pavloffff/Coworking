@@ -7,3 +7,4 @@ class ServersConfiguratorConfig:
     port: int
     service_name: str
     api_v1_str: str
+    jwt_secret_key: str

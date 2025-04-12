@@ -42,3 +42,7 @@ class TextChannelRepository(BaseRepository):
         stmt = delete(TextChannel).where(TextChannel.text_channel_id == data['text_channel_id'])
         await session.execute(stmt)
         await session.commit()
+    
+    @staticmethod
+    async def validate(session: AsyncSession, method: str, current_user: str, data: dict) -> bool:
+        return True

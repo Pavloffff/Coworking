@@ -14,7 +14,11 @@ router = APIRouter(prefix='/users')
 
 
 @router.get('/{user_id}')
-async def get_user(request: Request, user_id: int):
+async def get_user(
+    request: Request, 
+    user_id: int,
+    current_user: str = Depends(get_current_user)
+):
     session_pool = await request.app.state.database_session.create()
     async with session_pool() as session:
         return await UserRepository.get(session, user_id)
@@ -23,13 +27,14 @@ async def get_user(request: Request, user_id: int):
 async def get_users(
     request: Request,
     current_user: str = Depends(get_current_user),
-    email='',
-    name='',
-    tag=-1
+    email: str = '',
+    name: str = '',
+    tag: int = -1
 ):
     session_pool = await request.app.state.database_session.create()
     async with session_pool() as session:
-        return await UserRepository.get_all(session, email, name, tag)
+        _logger.error(type(tag))
+        return await UserRepository.get_all(session, email, name, int(tag))
 
 @router.post('/login', response_model=AuthResponse)
 async def login(request: Request, user: UserScheme) -> AuthResponse:

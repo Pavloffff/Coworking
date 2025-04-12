@@ -171,3 +171,8 @@ CREATE TABLE public.activitychannel (
 	CONSTRAINT activitychannel_activitytype_fk FOREIGN KEY (activity_type_id) REFERENCES public.activitytype(activity_type_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT activitychannel_server_fk FOREIGN KEY (server_id) REFERENCES public."server"(server_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+INSERT INTO public.right (name) VALUES ('add_user');
+INSERT INTO public.right (name) VALUES ('write');
+INSERT INTO public.right (name) VALUES ('speak');
+INSERT INTO public.right (name) VALUES ('delete_user');

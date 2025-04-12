@@ -7,7 +7,6 @@ from servers_configurator.config.file_storage_config import FileStorageConfig
 from servers_configurator.config.servers_configurator_config import ServersConfiguratorConfig
 from servers_configurator.config.exceptions.improperly_configured import ImproperlyConfigured
 
-
 @dataclass
 class Config:
     servers_configurator_config: ServersConfiguratorConfig
@@ -21,7 +20,8 @@ class Config:
                 host=cls.getenv('HOST'),
                 port=cls.getenv('PORT', int),
                 service_name=cls.getenv('SERVICE_NAME'),
-                api_v1_str=cls.getenv('API_V1_STR')
+                api_v1_str=cls.getenv('API_V1_STR'),
+                jwt_secret_key=cls.getenv('JWT_SECRET_KEY')
             ),
             kafka_config=KafkaConfig(
                 host=cls.getenv('KAFKA_HOST'),

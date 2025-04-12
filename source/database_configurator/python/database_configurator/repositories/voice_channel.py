@@ -42,3 +42,7 @@ class VoiceChannelRepository(BaseRepository):
         stmt = delete(VoiceChannel).where(VoiceChannel.voice_channel_id == data['voice_channel_id'])
         await session.execute(stmt)
         await session.commit()
+
+    @staticmethod
+    async def validate(session: AsyncSession, method: str, current_user: str, data: dict) -> bool:
+        return True

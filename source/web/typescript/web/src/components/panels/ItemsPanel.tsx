@@ -1,6 +1,29 @@
 import { useState, useEffect } from 'react'
 import TabPanel from './TabPanel'
 import SubmenuList from '../lists/SubmenuList'
+import ServersList from '../lists/ServersList'
+
+const mockServers = [
+	{
+		server_id: '1',
+		owner_id: 'user1',
+		name: 'Dungeon',
+		avatar_url:
+			'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg',
+	},
+	{
+		server_id: '2',
+		owner_id: 'user1',
+		name: 'Mangeon',
+		avatar_url:
+			'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg',
+	},
+	{
+		server_id: '3',
+		owner_id: 'user2',
+		name: 'Вихорьково main',
+	},
+]
 
 const ItemsPanel = () => {
 	const [selectedButton, setSelectedButton] = useState('btn1')
@@ -44,14 +67,18 @@ const ItemsPanel = () => {
 					fontSize: '18px',
 					fontWeight: 'bold',
 					color: '#444',
+					flexGrow: 1,
+					overflowY: 'auto',
 				}}
 			>
 				{selectedButton == 'btn1' ? (
+					<ServersList data={mockServers} />
+				) : selectedButton == 'btn2' ? (
 					<div>
 						<SubmenuList title="Переписки" />
 					</div>
 				) : (
-					'2143324'
+					'234e234'
 				)}
 			</div>
 			<div style={{ width: '100%' }}>

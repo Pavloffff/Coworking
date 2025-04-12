@@ -73,6 +73,7 @@ services:
       FILE_STORAGE_ACCESS_KEY: minioadmin
       FILE_STORAGE_SECRET_KEY: minioadmin
       FILE_STORAGE_BUCKET_NAME: coworking
+      JWT_SECRET_KEY: uweyfeiuwyft
     ports:
       - '8000:80'
     networks:

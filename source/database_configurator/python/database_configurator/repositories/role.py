@@ -29,6 +29,7 @@ class RoleRepository(BaseRepository):
         role_rights = RoleRepository._get_role_rights(role, rights_data[1])
         session.add_all(role_rights)
         await session.commit()
+        return role
 
     @staticmethod
     async def update(session: AsyncSession, data):
@@ -90,3 +91,7 @@ class RoleRepository(BaseRepository):
                 right_id=right_id
             ))
         return role_rights
+
+    @staticmethod
+    async def validate(session: AsyncSession, method: str, current_user: str, data: dict) -> bool:
+        return True

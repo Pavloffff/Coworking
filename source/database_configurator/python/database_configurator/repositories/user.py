@@ -52,3 +52,7 @@ class UserRepository(BaseRepository):
         stmt = delete(User).where(User.user_id == data['user_id'])
         await session.execute(stmt)
         await session.commit()
+    
+    @staticmethod
+    async def validate(session: AsyncSession, method: str, current_user: str, data: dict) -> bool:
+        return True

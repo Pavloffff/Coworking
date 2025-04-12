@@ -34,6 +34,7 @@ class ServersConfigurator:
         return startup
 
     def _startup(self):
+        self._app.state.config = self._config
         kafka_writer = Writer(
             self._config.kafka_config
         )
@@ -42,7 +43,7 @@ class ServersConfigurator:
             config=self._config.file_storage_config
         )
         self._app.state.file_storage_client = file_storage_client
-
+        
     def run(self):
         uvicorn.run(
             self._app, 
