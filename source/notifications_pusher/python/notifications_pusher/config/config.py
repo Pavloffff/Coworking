@@ -18,7 +18,10 @@ class Config:
     def load(cls):
         return Config(
             notifications_pusher_config=NotificationsPusherConfig(
-                service_name=cls.getenv('SERVICE_NAME')
+                service_name=cls.getenv('SERVICE_NAME'),
+                api_v1_str=cls.getenv('API_V1_STR'),
+                host=cls.getenv('HOST'),
+                port=cls.getenv('PORT', int)
             ),
             kafka_config=KafkaConfig(
                 host=cls.getenv('KAFKA_HOST'),
@@ -26,8 +29,8 @@ class Config:
                 topic=cls.getenv('KAFKA_DATABASE_TOPIC'),
                 auto_offset_reset=cls.getenv('KAFKA_AUTO_OFFSET_RESET'),
                 enable_auto_commit=bool(cls.getenv('KAFKA_ENABLE_AUTO_COMMIT', int)),
-                group_id=cls.getenv('KAFKA_DATABASE_GROUP_ID'),
-                initial_timeout=cls.getenv('KAFKA_INITIAL_TIMEOUT')
+                group_id=cls.getenv('KAFKA_NOTIFICATIONS_GROUP_ID'),
+                initial_timeout=cls.getenv('KAFKA_INITIAL_TIMEOUT', int)
             ),
             database_reader_config=DatabaseReaderConfig(
                 host=cls.getenv('DATABASE_READER_HOST'),

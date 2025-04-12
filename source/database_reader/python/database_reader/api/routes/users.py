@@ -12,7 +12,7 @@ from database_reader.api.dependencies.get_current_user import get_current_user
 
 router = APIRouter(prefix='/users')
 
-
+# TODO: выяснить почему сессия создается каждый раз
 @router.get('/{user_id}')
 async def get_user(
     request: Request, 

@@ -17,7 +17,8 @@ async def wait_add(client: DatabaseReaderClient, endpoint: str, data: dict, acce
     for _ in range(RETRY_ATTEMPTS):
         response = await client.get(endpoint=endpoint, params=params, access_token=access_token)
         _logger.error(response)
-        if isinstance(response, dict) and 'error' in response.keys():
+        if ((isinstance(response, dict) and 'error' in response.keys()) or 
+            (isinstance(response, list) and len(response) == 0)):
             await asyncio.sleep(RETRY_TIMEOUT)
             continue
         return True

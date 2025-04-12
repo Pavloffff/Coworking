@@ -19,7 +19,7 @@ services:
       KAFKA_HOST: coworking-kafka
       KAFKA_PORT: 9092
       KAFKA_DATABASE_TOPIC: coworking_database_topic
-      KAFKA_DATABASE_GROUP_ID: coworking-notifications-group
+      KAFKA_NOTIFICATIONS_GROUP_ID: coworking-notifications-group
       KAFKA_AUTO_OFFSET_RESET: earliest
       KAFKA_ENABLE_AUTO_COMMIT: 1
       KAFKA_INITIAL_TIMEOUT: 20

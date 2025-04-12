@@ -1,7 +1,7 @@
-import time
+import asyncio
 import json
-from kafka import KafkaConsumer
-from kafka.errors import NoBrokersAvailable
+from aiokafka import AIOKafkaConsumer
+from aiokafka.errors import KafkaError
 
 from notifications_pusher.logger import _logger
 from notifications_pusher.config.kafka_config import KafkaConfig
@@ -16,27 +16,30 @@ class Reader:
         self._auto_offset_reset = config.auto_offset_reset
         self._enable_auto_commit = config.enable_auto_commit
         self._group_id = config.group_id
-        self._codec = 'utf-8'
-        self._consumer = self._connect()
-        
-    def _connect(self):
+        self._consumer = None
+
+    async def _connect(self):
         while True:
             try:
-                _logger.info(f"Attempt to connect to Kafka {self._host}:{self._port} ...")
-                consumer = KafkaConsumer(
+                _logger.info(f"Connecting to Kafka {self._host}:{self._port}...")
+                self._consumer = AIOKafkaConsumer(
                     self._topic,
-                    bootstrap_servers=[f'{self._host}:{self._port}'],
+                    bootstrap_servers=f'{self._host}:{self._port}',
                     auto_offset_reset=self._auto_offset_reset,
                     enable_auto_commit=self._enable_auto_commit,
                     group_id=self._group_id
                 )
+                await self._consumer.start()
                 _logger.info("Connected to Kafka")
-                return consumer
-            except NoBrokersAvailable:
-                _logger.warning("Kafka is not available. Retry at {self._initial_timeout} seconds")
-                time.sleep(self._initial_timeout)
+                return
+            except KafkaError:
+                _logger.warning(f"Kafka not available. Retrying in {self._initial_timeout} sec...")
+                await asyncio.sleep(self._initial_timeout)
 
-    def listen(self):
-        for message in self._consumer:
-            decoded_message = json.loads(message.value.decode(self._codec))
-            yield decoded_message
+    async def listen(self):
+        await self._connect()
+        try:
+            async for message in self._consumer:
+                yield json.loads(message.value.decode())
+        finally:
+            await self._consumer.stop()

@@ -27,7 +27,7 @@ class Config:
                 auto_offset_reset=cls.getenv('KAFKA_AUTO_OFFSET_RESET'),
                 enable_auto_commit=bool(cls.getenv('KAFKA_ENABLE_AUTO_COMMIT', int)),
                 group_id=cls.getenv('KAFKA_DATABASE_GROUP_ID'),
-                initial_timeout=cls.getenv('KAFKA_INITIAL_TIMEOUT')
+                initial_timeout=cls.getenv('KAFKA_INITIAL_TIMEOUT', int)
             ),
             database_config=DatabaseConfig(
                 user=cls.getenv('DATABASE_USER'),

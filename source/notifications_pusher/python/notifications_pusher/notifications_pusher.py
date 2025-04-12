@@ -1,3 +1,11 @@
+import asyncio
+import uvicorn
+
+from uvicorn import Config as UvicornConfig, Server
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from notifications_pusher.api import api_router
 from notifications_pusher.config import Config
 from notifications_pusher.kafka_utils import Reader
 from notifications_pusher.logger import _logger
@@ -7,6 +15,19 @@ from notifications_pusher.waiter.waiter_strategy import WaiterStrategy
 class NotificationsPusher:
     def __init__(self):
         self._config = Config.load()
+        self._app = FastAPI(
+            title=self._config.notifications_pusher_config.service_name,
+            openapi_url=f'{self._config.notifications_pusher_config.api_v1_str}/openapi.json'
+        )
+        self._app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+        self._app.include_router(api_router, prefix=self._config.notifications_pusher_config.api_v1_str)
+        # self._app.add_event_handler('startup', self._startup_handler())
         self._kafka_reader = Reader(
             config=self._config.kafka_config
         )
@@ -15,14 +36,33 @@ class NotificationsPusher:
         )
     
     async def run(self):
-        for message in self._kafka_reader.listen():
+        server = Server(
+            UvicornConfig(
+                app=self._app,
+                host=self._config.notifications_pusher_config.host,
+                port=self._config.notifications_pusher_config.port,
+                loop=asyncio.get_event_loop()
+            )
+        )
+
+        server_task = asyncio.create_task(server.serve())
+        kafka_task = asyncio.create_task(self._listen_kafka())
+        
+        try:
+            await asyncio.gather(server_task, kafka_task)
+        finally:
+            await server.shutdown()
+            server_task.cancel()
+            kafka_task.cancel()
+    
+    async def _listen_kafka(self):
+        async for message in self._kafka_reader.listen():
             try:
-                _logger.error(f'Received message to push: {message}')
+                _logger.debug(f"Received message: {message}")
                 await self._process_message(message)
             except Exception as ex:
-                _logger.error(ex.with_traceback())
-                continue
-        
+                _logger.exception(f"Error processing message: {ex}")
+
     async def _process_message(self, message: dict):
         model = message['model']
         method = message['method']

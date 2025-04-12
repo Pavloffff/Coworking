@@ -63,6 +63,7 @@ const Login = () => {
 		try {
 			setLoginLoading(true)
 			const user: User = {
+				user_id: 0,
 				email: values.email,
 				password_hash: values.password,
 				password_salt: '',
@@ -101,6 +102,7 @@ const Login = () => {
 		try {
 			setRegisterLoading(true)
 			const user: User = {
+				user_id: 0,
 				name: values.name,
 				email: values.email,
 				password_hash: values.password,
