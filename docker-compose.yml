@@ -4,6 +4,38 @@ version: '3.8'
 #TODO: выпилить маппинг ненужных портов
 #TODO: переименовать postgres_data
 services:
+  coworking-notifications-pusher:
+    build: 'source/notifications_pusher/python'
+    depends_on:
+      - coworking-database-reader
+      - coworking-kafka
+      # - coworking-web
+    environment:
+      SERVICE_NAME: coworking-notifications-pusher
+      API_V1_STR: '/api/v1'
+      HOST: '0.0.0.0'
+      PORT: 80
+      JWT_SECRET_KEY: uweyfeiuwyft
+      KAFKA_HOST: coworking-kafka
+      KAFKA_PORT: 9092
+      KAFKA_DATABASE_TOPIC: coworking_database_topic
+      KAFKA_DATABASE_GROUP_ID: coworking-notifications-group
+      KAFKA_AUTO_OFFSET_RESET: earliest
+      KAFKA_ENABLE_AUTO_COMMIT: 1
+      KAFKA_INITIAL_TIMEOUT: 20
+      REDIS_HOST: coworking-redis
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_DB: 0
+      DATABASE_READER_HOST: coworking-database-reader
+      DATABASE_READER_PORT: 80
+      DATABASE_READER_ENDPOINT: '/api/v1'
+    ports:
+      - '8002:80'
+    networks:
+      - coworking-network
+    restart: always
+
   # coworking-web:
   #   build: source/web/typescript
   #   depends_on:

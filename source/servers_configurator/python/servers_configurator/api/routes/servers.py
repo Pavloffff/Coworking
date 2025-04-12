@@ -20,7 +20,8 @@ async def add_server(
         model_name='server',
         model=server,
         method='add',
-        current_user=current_user
+        current_user=current_user,
+        access_token=request.headers.get("Authorization")
     )
 
 
@@ -35,7 +36,8 @@ async def update_server(
         model_name='server',
         model=server,
         method='update',
-        current_user=current_user
+        current_user=current_user,
+        access_token=request.headers.get("Authorization")
     )
 
 
@@ -50,5 +52,6 @@ async def delete_server(
         model_name='server',
         model=server,
         method='delete',
-        current_user=current_user
+        current_user=current_user,
+        access_token=request.headers.get("Authorization")
     )

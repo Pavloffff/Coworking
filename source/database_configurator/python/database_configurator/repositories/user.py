@@ -8,6 +8,10 @@ from database_configurator.repositories.base import BaseRepository
 class UserRepository(BaseRepository):
     @staticmethod
     async def insert(session: AsyncSession, data: dict):
+        query = select(User).where(User.email == data['email'])
+        user = (await session.execute(query)).scalar_one_or_none()    
+        if user is not None:
+            return
         tag_query = select(func.max(User.tag)).limit(1)
         tag = ((await session.execute(tag_query)).scalar_one_or_none() or 0) + 1 
         user = User(

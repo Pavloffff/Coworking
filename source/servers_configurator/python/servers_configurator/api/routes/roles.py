@@ -18,7 +18,8 @@ async def add_role(
         model_name='role',
         model=model,
         method='add',
-        current_user=current_user
+        current_user=current_user,
+        access_token=request.headers.get("Authorization")
     )
 
 @router.put('/update')
@@ -32,7 +33,8 @@ async def update_role(
         model_name='role',
         model=model,
         method='update',
-        current_user=current_user
+        current_user=current_user,
+        access_token=request.headers.get("Authorization")
     )
 
 @router.delete('/delete')
@@ -46,5 +48,6 @@ async def delete_role(
         model_name='role',
         model=model,
         method='delete',
-        current_user=current_user
+        current_user=current_user,
+        access_token=request.headers.get("Authorization")
     )

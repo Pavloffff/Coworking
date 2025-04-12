@@ -87,4 +87,5 @@ class ServerRepository(BaseRepository):
     async def validate(session: AsyncSession, method: str, current_user: str, data: dict) -> bool:
         if method == 'add':
             return True
-        return UserChecker.check(session, current_user, data['server_id'])
+        role = await UserChecker.get_role(session, current_user, data['server_id'])
+        return role == 'owner'

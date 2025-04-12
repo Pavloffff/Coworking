@@ -19,13 +19,16 @@ class DatabaseConfigurator:
     
     async def run(self):
         session_pool = await self._session.create()
-        for message in self._kafka_reader.listen():
-            async with session_pool() as session:
-                _logger.error(f'Received message: {message}')
-                await self._process_message(session, message)
+        async with session_pool() as session:
+            for message in self._kafka_reader.listen():
+                try:
+                    _logger.error(f'Received message: {message}')
+                    await self._process_message(session, message)
+                except Exception as ex:
+                    _logger.error(ex.with_traceback())
+                    continue
 
     async def _process_message(self, session: AsyncSession, message: dict):
-        _logger.error(message)
         model = message['model']
         method = message['method']
         data = message['data']
@@ -33,7 +36,7 @@ class DatabaseConfigurator:
         
         repository = RepositoriesFactory.get_repository(model)
         
-        if not repository.validate(session, method, current_user, data):
+        if not (await repository.validate(session, method, current_user, data)):
             raise ValueError(f'Invalid user: {current_user}')
 
         action_methods = {

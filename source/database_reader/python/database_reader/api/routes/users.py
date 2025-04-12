@@ -26,7 +26,6 @@ async def get_user(
 @router.get('')
 async def get_users(
     request: Request,
-    current_user: str = Depends(get_current_user),
     email: str = '',
     name: str = '',
     tag: int = -1
