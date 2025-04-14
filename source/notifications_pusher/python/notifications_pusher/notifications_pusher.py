@@ -6,10 +6,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from notifications_pusher.api import api_router
+from notifications_pusher.api.routes.notifications import manager as ws_manager
 from notifications_pusher.config import Config
 from notifications_pusher.kafka_utils import Reader
 from notifications_pusher.logger import _logger
 from notifications_pusher.waiter.waiter_strategy import WaiterStrategy
+from notifications_pusher.redis_utils.client import RedisClient
 
 
 class NotificationsPusher:
@@ -27,7 +29,7 @@ class NotificationsPusher:
             allow_headers=["*"],
         )
         self._app.include_router(api_router, prefix=self._config.notifications_pusher_config.api_v1_str)
-        # self._app.add_event_handler('startup', self._startup_handler())
+        self._app.add_event_handler('startup', self._startup_handler())
         self._kafka_reader = Reader(
             config=self._config.kafka_config
         )
@@ -55,6 +57,19 @@ class NotificationsPusher:
             server_task.cancel()
             kafka_task.cancel()
     
+    def _startup_handler(self):
+        def startup() -> None:
+            _logger.info("Running startup handler.")
+            self._startup()
+        return startup
+    
+    def _startup(self):
+        self._app.state.config = self._config
+        redis_client = RedisClient(
+            config=self._config.redis_config
+        )
+        self._app.state.redis_client = redis_client
+    
     async def _listen_kafka(self):
         async for message in self._kafka_reader.listen():
             try:
@@ -69,6 +84,11 @@ class NotificationsPusher:
         data = message['data']
         access_token = message.get('access_token')
         
-        response_flag = await self._waiter_strategy.wait(model, method, data, access_token)
-        if response_flag:
-            _logger.error(f'PUSHED {message}')
+        # TODO: вернуть
+        # response_flag = await self._waiter_strategy.wait(model, method, data, access_token)
+        # if response_flag:
+        #     _logger.error(f'PUSHED {message}')
+        #     await ws_manager.broadcast(f'PUSHED {message}')
+
+        await ws_manager.broadcast(f'PUSHED {message}')
+        

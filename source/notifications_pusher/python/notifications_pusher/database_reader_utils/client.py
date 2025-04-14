@@ -15,6 +15,7 @@ class DatabaseReaderClient:
             headers = {
                 "Authorization": access_token
             }
+        _logger.error(params)
         async with session.get(f'{self._url}/{endpoint}', params=params, headers=headers) as response:
             if response.status == 200:
                 res_json = await response.json()

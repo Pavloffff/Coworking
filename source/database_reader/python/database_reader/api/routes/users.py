@@ -30,6 +30,9 @@ async def get_users(
     name: str = '',
     tag: int = -1
 ):
+    _logger.error(email)
+    _logger.error(name)
+    _logger.error(tag)
     session_pool = await request.app.state.database_session.create()
     async with session_pool() as session:
         _logger.error(type(tag))

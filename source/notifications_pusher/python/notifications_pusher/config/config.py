@@ -6,6 +6,7 @@ from notifications_pusher.config.kafka_config import KafkaConfig
 from notifications_pusher.config.notifications_pusher_config import NotificationsPusherConfig
 from notifications_pusher.config.exceptions.improperly_configured import ImproperlyConfigured
 from notifications_pusher.config.database_reader_config import DatabaseReaderConfig
+from notifications_pusher.config.redis_config import RedisConfig
 
 
 @dataclass
@@ -13,6 +14,7 @@ class Config:
     notifications_pusher_config: NotificationsPusherConfig
     kafka_config: KafkaConfig
     database_reader_config: DatabaseReaderConfig
+    redis_config: RedisConfig
 
     @classmethod
     def load(cls):
@@ -21,7 +23,8 @@ class Config:
                 service_name=cls.getenv('SERVICE_NAME'),
                 api_v1_str=cls.getenv('API_V1_STR'),
                 host=cls.getenv('HOST'),
-                port=cls.getenv('PORT', int)
+                port=cls.getenv('PORT', int),
+                jwt_secret_key=cls.getenv('JWT_SECRET_KEY')
             ),
             kafka_config=KafkaConfig(
                 host=cls.getenv('KAFKA_HOST'),
@@ -36,6 +39,12 @@ class Config:
                 host=cls.getenv('DATABASE_READER_HOST'),
                 port=cls.getenv('DATABASE_READER_PORT', int),
                 api_v1_str=cls.getenv('DATABASE_READER_ENDPOINT')
+            ),
+            redis_config=RedisConfig(
+                host=cls.getenv('REDIS_HOST'),
+                port=cls.getenv('REDIS_PORT', int),
+                password=cls.getenv('REDIS_PASSWORD'),
+                db=cls.getenv('REDIS_DB')
             )
         )
     

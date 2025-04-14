@@ -7,3 +7,4 @@ class NotificationsPusherConfig:
     api_v1_str: str
     host: str
     port: int
+    jwt_secret_key: str

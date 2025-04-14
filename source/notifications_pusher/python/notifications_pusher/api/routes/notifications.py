@@ -2,24 +2,25 @@ from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from starlette.requests import Request
 
 from notifications_pusher.logger import _logger
-from notifications_pusher.api.utils.connection_manager import ConnectionManager, get_manager
+from notifications_pusher.api.utils.connection_manager import ConnectionManager
+from notifications_pusher.api.dependencies.get_current_user import get_current_user
+from notifications_pusher.redis_utils.client import RedisClient
 
 
 router = APIRouter(prefix='/notifications')
+manager = ConnectionManager()
 
 @router.websocket("/{client_id}")
 async def websocket_endpoint(
-    websocket: WebSocket,
+    websocket: WebSocket, 
     client_id: str,
-    manager: ConnectionManager = Depends(get_manager)
+    current_user: str = Depends(get_current_user)
 ):
-    await manager.connect(websocket, client_id)
+    storage: RedisClient = websocket.app.state.redis_client
+    await manager.connect(websocket, current_user, client_id, storage)
     try:
         while True:
-            data = await websocket.receive_text()
-            _logger.error(data)
-    except WebSocketDisconnect:
-        await manager.disconnect(client_id)
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        await manager.disconnect(client_id)
+            await websocket.receive_text()
+    except Exception:
+        _logger.error(f'{current_user} disconnected {client_id}')
+        await manager.disconnect(client_id, storage)
