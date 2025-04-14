@@ -12,6 +12,7 @@ from notifications_pusher.kafka_utils import Reader
 from notifications_pusher.logger import _logger
 from notifications_pusher.waiter.waiter_strategy import WaiterStrategy
 from notifications_pusher.redis_utils.client import RedisClient
+from notifications_pusher.api.utils.token_processor import TokenProcessor
 
 
 class NotificationsPusher:
@@ -90,5 +91,9 @@ class NotificationsPusher:
         #     _logger.error(f'PUSHED {message}')
         #     await ws_manager.broadcast(f'PUSHED {message}')
 
-        await ws_manager.send_to_user(json.dumps)
+        await ws_manager.send_to_user(
+            message=json.dumps(message),
+            current_user='master@master.com',
+            storage=self._app.state.redis_client,
+        )
         

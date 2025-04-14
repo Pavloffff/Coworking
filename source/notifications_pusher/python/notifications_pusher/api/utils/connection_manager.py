@@ -18,32 +18,37 @@ class ConnectionManager:
             _logger.error(current_user)
             self.active_connections[client_id] = websocket
             stored_data = await storage.get(current_user)
+            stored_set = set()
             if stored_data is not None:
-                stored_data['connections'].append(client_id)
-            else:
-                stored_data = {'connections': [client_id]}
-            await storage.put(current_user, stored_data)
+                _logger.error(type(stored_data))
+                stored_set = set(stored_data['connections'])    
+            stored_set.add(client_id)
+            await storage.put(current_user, {'connections': list(stored_set)})
 
     async def disconnect(self, client_id: str, current_user: str, storage: RedisClient):
         async with self.lock:
             websocket = self.active_connections.pop(client_id, None)
             stored_data = await storage.get(current_user)
             if stored_data is not None:
-                connections = stored_data['connections']
-                index = connections.index(client_id)
-                connections = connections[:index] + connections[index+1:]
-                stored_data['connections'] = connections
-                await storage.put(current_user, stored_data)
+                _logger.error(stored_data)
+                stored_set = set(stored_data['connections'])
+                stored_set.remove(client_id)
+                _logger.error(stored_set)
+                await storage.put(current_user, {'connections': list(stored_set)})
             if websocket and websocket.client_state == WebSocketState.CONNECTED:
                 await websocket.close()
 
     async def send_to_user(self, message: str, current_user: str, storage: RedisClient):
         async with self.lock:
             connections = await storage.get(current_user)
+            _logger.error(connections)
             if connections is not None:
-                for conn in connections:
+                for conn in connections['connections']:
                     websocket = self.active_connections.get(conn)
+                    # _logger.error(self.active_connections)
+                    # _logger.error(conn)
                     if websocket and websocket.client_state == WebSocketState.CONNECTED:
+                        _logger.error(message)
                         await websocket.send_text(message)        
 
     async def send_to_client(self, message: str, client_id: str):

@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
-from starlette.requests import Request
+from fastapi import APIRouter, Depends, WebSocket
 
 from notifications_pusher.logger import _logger
 from notifications_pusher.api.utils.connection_manager import ConnectionManager
