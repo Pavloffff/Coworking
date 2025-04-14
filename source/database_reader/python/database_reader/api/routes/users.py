@@ -19,8 +19,8 @@ async def get_user(
     user_id: int,
     current_user: str = Depends(get_current_user)
 ):
-    session_pool = await request.app.state.database_session.create()
-    async with session_pool() as session:
+    # session_pool = await request.app.state.database_session.create()
+    async with request.app.state.database_session() as session:
         return await UserRepository.get(session, user_id)
 
 @router.get('')
@@ -33,8 +33,8 @@ async def get_users(
     _logger.error(email)
     _logger.error(name)
     _logger.error(tag)
-    session_pool = await request.app.state.database_session.create()
-    async with session_pool() as session:
+    # session_pool = await request.app.state.database_session.create()
+    async with request.app.state.database_session() as session:
         _logger.error(type(tag))
         return await UserRepository.get_all(session, email, name, int(tag))
 
@@ -42,9 +42,9 @@ async def get_users(
 async def login(request: Request, user: UserScheme) -> AuthResponse:
     config: Config = request.app.state.config
     redis_client: RedisClient = request.app.state.redis_client
-    session_pool = await request.app.state.database_session.create()
+    # session_pool = await request.app.state.database_session.create()
     user_model = None
-    async with session_pool() as session:
+    async with request.app.state.database_session() as session:
         users = await UserRepository.get_all(session, user.email)
         if len(users) > 0:
             user_model = users[0]

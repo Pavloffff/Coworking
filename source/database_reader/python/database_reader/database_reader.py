@@ -29,12 +29,12 @@ class DatabaseReader:
         self._app.add_event_handler('startup', self._startup_handler())
     
     def _startup_handler(self):
-        def startup() -> None:
+        async def startup() -> None:
             _logger.info("Running startup handler.")
-            self._startup()
+            await self._startup()
         return startup
 
-    def _startup(self):
+    async def _startup(self):
         self._app.state.config = self._config
         file_storage_client = FileStorageClient(
             config=self._config.file_storage_config
@@ -43,7 +43,7 @@ class DatabaseReader:
         database_session = DatabaseSession(
             config=self._config.database_config
         )
-        self._app.state.database_session = database_session
+        self._app.state.database_session = await database_session.create()
         redis_client = RedisClient(
             config=self._config.redis_config
         )
