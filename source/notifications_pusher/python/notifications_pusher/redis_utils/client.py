@@ -19,6 +19,8 @@ class RedisClient:
     
     async def get(self, key: str) -> dict:
         data = await self._storage.get(key)
+        if data is None:
+            return None
         return json.loads(data)
     
     async def delete(self, key):

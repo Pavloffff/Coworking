@@ -1,5 +1,5 @@
+import json
 import asyncio
-import uvicorn
 
 from uvicorn import Config as UvicornConfig, Server
 from fastapi import FastAPI
@@ -90,5 +90,5 @@ class NotificationsPusher:
         #     _logger.error(f'PUSHED {message}')
         #     await ws_manager.broadcast(f'PUSHED {message}')
 
-        await ws_manager.broadcast(f'PUSHED {message}')
+        await ws_manager.send_to_user(json.dumps)
         

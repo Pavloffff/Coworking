@@ -23,4 +23,4 @@ async def websocket_endpoint(
             await websocket.receive_text()
     except Exception:
         _logger.error(f'{current_user} disconnected {client_id}')
-        await manager.disconnect(client_id, storage)
+        await manager.disconnect(client_id, current_user, storage)
