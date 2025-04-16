@@ -6,7 +6,11 @@ from database_reader.models import UserRole, User, Role
 
 class UserRoleRepository:
     @staticmethod
-    async def get_all(session: AsyncSession, user_id=-1, role_id=-1) -> list[UserRole]:
+    async def get_all(
+        session: AsyncSession, 
+        user_id: int = -1, 
+        role_id: int = -1,
+) -> list[UserRole]:
         stmt = select(UserRole)
         if user_id >= 0:
             stmt = stmt.where(UserRole.user_id == user_id)
