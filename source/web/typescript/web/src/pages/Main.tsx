@@ -3,6 +3,15 @@ import InputPanel from '../components/panels/InputPanel'
 import ProjectHeader from '../components/headers/ProjectHeader'
 import ItemsPanel from '../components/panels/ItemsPanel'
 import ChatPanel from '../components/panels/ChatPanel'
+import { config } from '../config/config'
+import { v4 as uuidv4 } from 'uuid'
+import useWebSocket from 'react-use-websocket'
+import { useCallback, useEffect, useRef } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { serversApi } from '../api/servers/serversApi'
+import Cookies from 'js-cookie'
+import { ServerModel } from '../api/types'
+import { useNavigate } from 'react-router-dom'
 
 const chatData = [
 	{
@@ -39,7 +48,135 @@ const chatData = [
 	},
 ]
 
+// const mockServers = [
+// 	{
+// 		server_id: '1',
+// 		owner_id: 'user1',
+// 		name: 'Dungeon',
+// 		// avatar_url: '',
+// 		// 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg',
+// 	},
+// 	{
+// 		server_id: '2',
+// 		owner_id: 'user1',
+// 		name: 'Mangeon',
+// 		// avatar_url:
+// 		// 	'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg',
+// 	},
+// 	{
+// 		server_id: '3',
+// 		owner_id: 'user2',
+// 		name: 'Вихорьково main',
+// 	},
+// ]
+// const useServers = () => {
+// 	const access_token = Cookies.get('access_token') as string
+// 	const refresh_token = Cookies.get('refresh_token') as string
+// 	const socketUrl = `${
+// 		config.notifications_pisher_ws_endpoint
+// 	}/${uuidv4()}?token=${access_token}`
+// 	console.log(socketUrl)
+
+// 	const { data, refetch } = useQuery<ServerModel[]>({
+// 		queryKey: ['getUserServers'],
+// 		queryFn: async () => {
+// 			const response = await serversApi.getUserServers(
+// 				access_token,
+// 				refresh_token
+// 			)
+// 			return response.data
+// 		},
+// 	})
+
+// 	const { lastMessage } = useWebSocket(socketUrl)
+// 	useEffect(() => {
+// 		if (lastMessage !== null) {
+// 			refetch()
+// 		}
+// 	}, [lastMessage, refetch])
+// 	return data
+// }
+
 const Main = () => {
+	const navigate = useNavigate()
+	const access_token = Cookies.get('access_token') as string
+	const refresh_token = Cookies.get('refresh_token') as string
+
+	const isMounted = useRef(false) // Добавляем реф для отслеживания монтирования
+	const wsUrl = useRef<string>('')
+
+	// const handleLogout = () => {
+	// 	Cookies.remove('access_token')
+	// 	Cookies.remove('refresh_token')
+	// 	navigate('/login')
+	// 	// window.location.reload()
+	// }
+
+	const handleLogout = useCallback(() => {
+		Cookies.remove('access_token')
+		Cookies.remove('refresh_token')
+		navigate('/login')
+	}, [navigate])
+
+	const { data: servers, refetch } = useQuery<ServerModel[]>({
+		queryKey: ['servers'],
+		queryFn: async (): Promise<ServerModel[]> => {
+			try {
+				const response = await serversApi.getUserServers(
+					access_token,
+					refresh_token
+				)
+				return response.data
+			} catch (error) {
+				console.log(error)
+
+				handleLogout()
+				return []
+			}
+		},
+		refetchOnWindowFocus: false, // Отключаем обновление при фокусе окна
+		refetchOnMount: false, // Отключаем обновление при монтировании
+		refetchOnReconnect: false, // Отключаем обновление при реконнекте
+		staleTime: Infinity, // Данные никогда не считаются устаревшими
+		retry: false,
+		enabled: !!access_token,
+	})
+
+	const { lastMessage } = useWebSocket(wsUrl.current, {
+		shouldReconnect: () => false,
+		onError: (event: Event) => {
+			console.error('WebSocket error:', event)
+			handleLogout()
+		},
+		onClose: (event: CloseEvent) => {
+			if (event.code !== 1000) handleLogout()
+		},
+		reconnectAttempts: 0,
+	})
+
+	// Обновление данных при новых сообщениях
+	useEffect(() => {
+		if (access_token && !wsUrl.current) {
+			wsUrl.current = `${
+				config.notifications_pisher_ws_endpoint
+			}/${uuidv4()}?token=${access_token}`
+		}
+	}, [access_token])
+
+	// Обновление данных при новых сообщениях
+	useEffect(() => {
+		if (isMounted.current && lastMessage) {
+			refetch()
+		}
+	}, [lastMessage, refetch])
+
+	// Отслеживаем монтирование компонента
+	useEffect(() => {
+		isMounted.current = true
+		return () => {
+			isMounted.current = false
+		}
+	}, [])
 	return (
 		<div
 			style={{
@@ -80,7 +217,7 @@ const Main = () => {
 							minHeight: 0,
 						}}
 					>
-						<ItemsPanel />
+						<ItemsPanel servers={servers} />
 					</div>
 					<div
 						style={{

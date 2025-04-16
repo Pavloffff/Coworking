@@ -7,6 +7,7 @@ interface AppConfig {
 		baseUrl: string
 		timeout: number
 	}
+	notifications_pisher_ws_endpoint: string
 }
 
 export const config: AppConfig = {
@@ -22,4 +23,8 @@ export const config: AppConfig = {
 			'http://localhost:8000/api/v1',
 		timeout: Number(import.meta.env.VITE_API_TIMEOUT) || 5000,
 	},
+	notifications_pisher_ws_endpoint: `${
+		import.meta.env.VITE_NOTIFICATIONS_PUSHER_API_BASE_URL ||
+		'ws://localhost:8002/api/v1'
+	}/notifications`,
 }

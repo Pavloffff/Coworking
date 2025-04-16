@@ -18,8 +18,6 @@ export const authApi = {
 	refresh: (request: AuthResponse): Promise<AxiosResponse<AuthResponse>> => {
 		return databaseReaderApiClient.post('/users/refresh', {
 			...request,
-			email: request.email || '',
-			auth: request.auth || false,
 		})
 	},
 

@@ -78,8 +78,6 @@ async def login(request: Request, user: UserScheme) -> AuthResponse:
         {'refresh_token': refresh_token}    # not_a_secret
     )
     return AuthResponse(
-        email=user.email,
-        auth=auth,
         access_token=TokenProcessor.generate(
             subject=user.email,
             expire=config.database_reader_config.access_token_expire_minutes,
@@ -121,8 +119,6 @@ async def refresh_token(
     await redis_client.put(email, {"refresh_token": new_refresh_token})
     
     return AuthResponse(
-        email=email,
-        auth=True,
         access_token=new_access_token,
         refresh_token=new_refresh_token
     )

@@ -11,12 +11,17 @@ export interface User {
 export interface AuthResponse {
 	access_token: string
 	refresh_token: string
-	email?: string
-	auth?: boolean
 }
 
 export interface AddUserResponse {
 	method: string
 	model: string
 	data: User
+}
+
+export interface ServerModel {
+	name: string
+	owner_id: string
+	server_id: string
+	// avatar_url?: string
 }
