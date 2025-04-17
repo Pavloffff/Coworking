@@ -6,7 +6,7 @@ import ChatPanel from '../components/panels/ChatPanel'
 import { config } from '../config/config'
 import { v4 as uuidv4 } from 'uuid'
 import useWebSocket from 'react-use-websocket'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { serversApi } from '../api/servers/serversApi'
 import Cookies from 'js-cookie'
@@ -105,12 +105,12 @@ const Main = () => {
 	const isMounted = useRef(false) // Добавляем реф для отслеживания монтирования
 	const wsUrl = useRef<string>('')
 
-	// const handleLogout = () => {
-	// 	Cookies.remove('access_token')
-	// 	Cookies.remove('refresh_token')
-	// 	navigate('/login')
-	// 	// window.location.reload()
-	// }
+	const [selectedServerId, setSelectedServerId] = useState<string | null>(null)
+	const handleServerSelect = useCallback((serverId: string) => {
+		setSelectedServerId(serverId)
+		Cookies.set('selected_server', serverId)
+		console.log('Selected server:', serverId)
+	  }, [])
 
 	const handleLogout = useCallback(() => {
 		Cookies.remove('access_token')
@@ -166,7 +166,14 @@ const Main = () => {
 	// Обновление данных при новых сообщениях
 	useEffect(() => {
 		if (isMounted.current && lastMessage) {
-			refetch()
+			refetch().then(() => {
+				const currentServer = servers?.find(s => s.server_id === selectedServerId)
+				if (!currentServer && servers && servers.length > 0) {
+					const firstId = servers[0].server_id
+					setSelectedServerId(firstId)
+					Cookies.set('selected_server', firstId)
+				}
+			})
 		}
 	}, [lastMessage, refetch])
 
@@ -177,6 +184,23 @@ const Main = () => {
 			isMounted.current = false
 		}
 	}, [])
+
+	useEffect(() => {
+		if (servers && servers.length > 0) {
+		  const savedServerId = Cookies.get('selected_server')
+		  const serverExists = servers.some(s => s.server_id === savedServerId)
+		  
+		  if (savedServerId && serverExists) {
+			setSelectedServerId(savedServerId)
+		  } else {
+			const firstId = servers[0].server_id
+			setSelectedServerId(firstId)
+			Cookies.set('selected_server', firstId)
+			console.log('Default server selected:', firstId)
+		  }
+		}
+	  }, [servers])
+
 	return (
 		<div
 			style={{
@@ -217,7 +241,11 @@ const Main = () => {
 							minHeight: 0,
 						}}
 					>
-						<ItemsPanel servers={servers} />
+						<ItemsPanel 
+							servers={servers} 
+							onServerSelect={handleServerSelect}
+  							selectedServerId={selectedServerId}
+						/>
 					</div>
 					<div
 						style={{

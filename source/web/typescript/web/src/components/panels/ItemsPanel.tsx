@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import TabPanel from './TabPanel'
-import SubmenuList from '../lists/SubmenuList'
 import ServersList from '../lists/ServersList'
 import { ServerModel } from '../../api/types'
 // import { serversApi } from '../../api/servers/serversApi'
@@ -48,7 +47,17 @@ import { ServerModel } from '../../api/types'
 // 	return { servers, isLoading, error, sendMessage }
 // }
 
-const ItemsPanel = ({ servers }: { servers: ServerModel[] | undefined }) => {
+interface ItemsPanelProps {
+	servers?: ServerModel[] | undefined 
+	onServerSelect: (serverId: string) => void
+	selectedServerId: string | null
+  }
+
+const ItemsPanel = ({
+	servers,
+	onServerSelect,
+	selectedServerId 
+}: ItemsPanelProps) => {
 	const [selectedButton, setSelectedButton] = useState('btn1')
 	const [dimensions, setDimensions] = useState({
 		width: window.innerWidth,
@@ -127,7 +136,7 @@ const ItemsPanel = ({ servers }: { servers: ServerModel[] | undefined }) => {
 					/>
 				) : selectedButton == 'btn2' ? (
 					<div>
-						<SubmenuList title="Переписки" />
+						{selectedServerId || -1}
 					</div>
 				) : (
 					'234e234'
