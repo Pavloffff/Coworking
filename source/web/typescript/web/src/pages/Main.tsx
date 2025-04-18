@@ -110,7 +110,7 @@ const Main = () => {
 		setSelectedServerId(serverId)
 		Cookies.set('selected_server', serverId)
 		console.log('Selected server:', serverId)
-	  }, [])
+	}, [])
 
 	const handleLogout = useCallback(() => {
 		Cookies.remove('access_token')
@@ -167,7 +167,9 @@ const Main = () => {
 	useEffect(() => {
 		if (isMounted.current && lastMessage) {
 			refetch().then(() => {
-				const currentServer = servers?.find(s => s.server_id === selectedServerId)
+				const currentServer = servers?.find(
+					s => s.server_id === selectedServerId
+				)
 				if (!currentServer && servers && servers.length > 0) {
 					const firstId = servers[0].server_id
 					setSelectedServerId(firstId)
@@ -175,7 +177,7 @@ const Main = () => {
 				}
 			})
 		}
-	}, [lastMessage, refetch])
+	}, [lastMessage, refetch, selectedServerId, servers])
 
 	// Отслеживаем монтирование компонента
 	useEffect(() => {
@@ -187,19 +189,19 @@ const Main = () => {
 
 	useEffect(() => {
 		if (servers && servers.length > 0) {
-		  const savedServerId = Cookies.get('selected_server')
-		  const serverExists = servers.some(s => s.server_id === savedServerId)
-		  
-		  if (savedServerId && serverExists) {
-			setSelectedServerId(savedServerId)
-		  } else {
-			const firstId = servers[0].server_id
-			setSelectedServerId(firstId)
-			Cookies.set('selected_server', firstId)
-			console.log('Default server selected:', firstId)
-		  }
+			const savedServerId = Cookies.get('selected_server')
+			const serverExists = servers.some(s => s.server_id === savedServerId)
+
+			if (savedServerId && serverExists) {
+				setSelectedServerId(savedServerId)
+			} else {
+				const firstId = servers[0].server_id
+				setSelectedServerId(firstId)
+				Cookies.set('selected_server', firstId)
+				console.log('Default server selected:', firstId)
+			}
 		}
-	  }, [servers])
+	}, [servers])
 
 	return (
 		<div
@@ -241,10 +243,10 @@ const Main = () => {
 							minHeight: 0,
 						}}
 					>
-						<ItemsPanel 
-							servers={servers} 
+						<ItemsPanel
+							servers={servers}
 							onServerSelect={handleServerSelect}
-  							selectedServerId={selectedServerId}
+							selectedServerId={selectedServerId}
 						/>
 					</div>
 					<div

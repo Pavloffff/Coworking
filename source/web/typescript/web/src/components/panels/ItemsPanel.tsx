@@ -48,15 +48,15 @@ import { ServerModel } from '../../api/types'
 // }
 
 interface ItemsPanelProps {
-	servers?: ServerModel[] | undefined 
+	servers?: ServerModel[] | undefined
 	onServerSelect: (serverId: string) => void
 	selectedServerId: string | null
-  }
+}
 
 const ItemsPanel = ({
 	servers,
 	onServerSelect,
-	selectedServerId 
+	selectedServerId,
 }: ItemsPanelProps) => {
 	const [selectedButton, setSelectedButton] = useState('btn1')
 	const [dimensions, setDimensions] = useState({
@@ -75,7 +75,7 @@ const ItemsPanel = ({
 		window.addEventListener('resize', handleResize)
 		return () => window.removeEventListener('resize', handleResize)
 	}, [])
-	const containerWidth = Math.min(dimensions.width - 32, 420)
+	const containerWidth = Math.min(dimensions.width - 32, 460)
 	const containerHeight = (dimensions.height - 32) * 0.9
 
 	// useEffect(() => {
@@ -130,14 +130,11 @@ const ItemsPanel = ({
 				{selectedButton == 'btn1' ? (
 					<ServersList
 						data={servers || []}
-						// data={mockServers}
-						// isLoading={isLoading}
-						// error={error?.message}
+						selectedServerId={selectedServerId}
+						onItemClick={onServerSelect}
 					/>
 				) : selectedButton == 'btn2' ? (
-					<div>
-						{selectedServerId || -1}
-					</div>
+					<div>{selectedServerId || -1}</div>
 				) : (
 					'234e234'
 				)}
