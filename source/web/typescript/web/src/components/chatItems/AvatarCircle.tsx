@@ -25,9 +25,9 @@ const AvatarCircle: React.FC<AvatarCircleProps> = ({ src, size = 64 }) => {
 					src={
 						src
 							? src
-							: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg'
+							: 'https://xmple.com/wallpaper/gradient-linear-white-grey-2688x1242-c2-d3d3d3-ffffff-a-15-f-14.svg'
 					}
-					alt="Аватар"
+					alt=""
 					style={{
 						width: '100%',
 						height: '100%',

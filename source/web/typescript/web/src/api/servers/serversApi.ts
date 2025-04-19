@@ -43,4 +43,17 @@ export const serversApi = {
 			apiClient: serversConfiguratorApiClient,
 		})
 	},
+	getCurrentServer: async (
+		server_id: number,
+		access_token: string,
+		refresh_token: string
+	): Promise<AxiosResponse<ServerModel>> => {
+		return handleApiRequest<ServerModel>({
+			method: 'get',
+			url: `/servers/${server_id}`,
+			access_token,
+			refresh_token,
+			apiClient: databaseReaderApiClient,
+		})
+	},
 }

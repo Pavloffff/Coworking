@@ -10,92 +10,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { serversApi } from '../api/servers/serversApi'
 import Cookies from 'js-cookie'
-import { ServerModel } from '../api/types'
+import { ChatItemScheme, ServerModel, TextChannelModel } from '../api/types'
 import { useNavigate } from 'react-router-dom'
-
-const chatData = [
-	{
-		name: 'Иван Иванов',
-		text: 'Привет! Как дела?',
-	},
-	{
-		name: 'Мария Петрова',
-		text: 'Привет! Пока не родила!',
-	},
-	{
-		name: 'Пидр Сидоров',
-		text: 'Как продвигается проект?',
-	},
-	{
-		name: 'Анна Кузнецова',
-		text: 'Мы почти готовы!',
-	},
-	{
-		name: 'Иван Иванов',
-		text: 'Привет! Как дела?',
-	},
-	{
-		name: 'Мария Петрова',
-		text: 'Привет! Пока не родила!',
-	},
-	{
-		name: 'Пидр Сидоров',
-		text: 'Как продвигается проект?',
-	},
-	{
-		name: 'Анна Кузнецова',
-		text: 'Мы почти готовы!',
-	},
-]
-
-// const mockServers = [
-// 	{
-// 		server_id: '1',
-// 		owner_id: 'user1',
-// 		name: 'Dungeon',
-// 		// avatar_url: '',
-// 		// 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg',
-// 	},
-// 	{
-// 		server_id: '2',
-// 		owner_id: 'user1',
-// 		name: 'Mangeon',
-// 		// avatar_url:
-// 		// 	'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg',
-// 	},
-// 	{
-// 		server_id: '3',
-// 		owner_id: 'user2',
-// 		name: 'Вихорьково main',
-// 	},
-// ]
-// const useServers = () => {
-// 	const access_token = Cookies.get('access_token') as string
-// 	const refresh_token = Cookies.get('refresh_token') as string
-// 	const socketUrl = `${
-// 		config.notifications_pisher_ws_endpoint
-// 	}/${uuidv4()}?token=${access_token}`
-// 	console.log(socketUrl)
-
-// 	const { data, refetch } = useQuery<ServerModel[]>({
-// 		queryKey: ['getUserServers'],
-// 		queryFn: async () => {
-// 			const response = await serversApi.getUserServers(
-// 				access_token,
-// 				refresh_token
-// 			)
-// 			return response.data
-// 		},
-// 	})
-
-// 	const { lastMessage } = useWebSocket(socketUrl)
-// 	useEffect(() => {
-// 		if (lastMessage !== null) {
-// 			refetch()
-// 		}
-// 	}, [lastMessage, refetch])
-// 	return data
-// }
+import { textChannelsApi } from '../api/textChannels/textChannelsApi'
+import { chatItemsApi } from '../api/chatItems/chatItemsApi'
 
 const Main = () => {
 	const navigate = useNavigate()
@@ -112,8 +30,17 @@ const Main = () => {
 		console.log('Selected server:', serverId)
 	}, [])
 
+	const [selectedTextChannelId, setSelectedTextChannelId] = useState<
+		string | null
+	>(null)
+	const handleTextChannelSelect = useCallback((textChannelId: string) => {
+		setSelectedTextChannelId(textChannelId)
+		Cookies.set('selected_text_channel', textChannelId)
+		console.log('Selected text channel:', textChannelId)
+	}, [])
+
 	const handleLogout = useCallback(() => {
-		//TODO: обратно
+		//TODO: обратно вернуть логику
 		// Cookies.remove('access_token')
 		// Cookies.remove('refresh_token')
 		// navigate('/login')
@@ -144,6 +71,84 @@ const Main = () => {
 		enabled: !!access_token,
 	})
 
+	const { data: textChannels, refetch: refetchChannels } = useQuery<
+		TextChannelModel[]
+	>({
+		queryKey: ['textChannels', selectedServerId],
+		queryFn: async () => {
+			if (!selectedServerId) return []
+			const response = await textChannelsApi.getServerTextChannels(
+				parseInt(selectedServerId),
+				access_token,
+				refresh_token
+			)
+			return response.data
+		},
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		staleTime: Infinity,
+		retry: false,
+		enabled: !!selectedServerId,
+	})
+
+	const { data: currentServer } = useQuery({
+		queryKey: ['currentServer', selectedServerId],
+		queryFn: async () => {
+			if (!selectedServerId) return null
+			const response = await serversApi.getCurrentServer(
+				parseInt(selectedServerId),
+				access_token,
+				refresh_token
+			)
+			return response.data
+		},
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		staleTime: Infinity,
+		retry: false,
+		enabled: !!selectedServerId,
+	})
+
+	const { data: currentTextChannel } = useQuery({
+		queryKey: ['currentTextChannel', selectedTextChannelId],
+		queryFn: async () => {
+			if (!selectedTextChannelId) return null
+			const response = await textChannelsApi.getCurrentTextChannel(
+				parseInt(selectedTextChannelId),
+				access_token,
+				refresh_token
+			)
+			return response.data
+		},
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		staleTime: Infinity,
+		retry: false,
+		enabled: !!selectedServerId,
+	})
+
+	const { data: chatItems, refetch: refetchChat } = useQuery<ChatItemScheme[]>({
+		queryKey: ['chatItems', selectedTextChannelId],
+		queryFn: async () => {
+			if (!selectedTextChannelId) return []
+			const response = await chatItemsApi.getTextChannelsChatItems(
+				parseInt(selectedTextChannelId),
+				access_token,
+				refresh_token
+			)
+			return response.data
+		},
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		staleTime: Infinity,
+		retry: false,
+		enabled: !!selectedTextChannelId,
+	})
+
 	const { lastMessage } = useWebSocket(wsUrl.current, {
 		shouldReconnect: () => false,
 		onError: (event: Event) => {
@@ -169,17 +174,20 @@ const Main = () => {
 	useEffect(() => {
 		if (isMounted.current && lastMessage) {
 			refetch().then(() => {
-				const currentServer = servers?.find(
+				const currentServerModel = servers?.find(
 					s => s.server_id === selectedServerId
 				)
-				if (!currentServer && servers && servers.length > 0) {
+				if (!currentServerModel && servers && servers.length > 0) {
 					const firstId = servers[0].server_id
 					setSelectedServerId(firstId)
 					Cookies.set('selected_server', firstId)
 				}
+				if (selectedServerId) {
+					refetchChannels()
+				}
 			})
 		}
-	}, [lastMessage, refetch, selectedServerId, servers])
+	}, [lastMessage, refetch, refetchChannels, selectedServerId, servers])
 
 	// Отслеживаем монтирование компонента
 	useEffect(() => {
@@ -204,6 +212,18 @@ const Main = () => {
 			}
 		}
 	}, [servers])
+
+	useEffect(() => {
+		if (isMounted.current && lastMessage) {
+			refetchChat()
+		}
+	}, [lastMessage, refetchChat])
+
+	useEffect(() => {
+		if (selectedTextChannelId) {
+			refetchChat()
+		}
+	}, [selectedTextChannelId, refetchChat])
 
 	return (
 		<div
@@ -249,6 +269,9 @@ const Main = () => {
 							servers={servers}
 							onServerSelect={handleServerSelect}
 							selectedServerId={selectedServerId}
+							textChannels={textChannels}
+							onTextChannelSelect={handleTextChannelSelect}
+							selectedTextChannelId={selectedTextChannelId}
 						/>
 					</div>
 					<div
@@ -266,7 +289,10 @@ const Main = () => {
 								marginBottom: '16px',
 							}}
 						>
-							<ProjectHeader projectName="Dungeon" itemName="чат Пивальди" />
+							<ProjectHeader
+								projectName={currentServer?.name || ''}
+								itemName={currentTextChannel?.name || ''}
+							/>
 						</div>
 						<div
 							style={{
@@ -276,7 +302,15 @@ const Main = () => {
 								minHeight: 0,
 							}}
 						>
-							<ChatPanel chatData={chatData} />
+							<ChatPanel
+								chatData={
+									chatItems?.map(item => ({
+										name: item.user_data,
+										text: item.text ?? '',
+										// fileUrl: item.file_url,
+									})) || []
+								}
+							/>
 						</div>
 					</div>
 				</div>

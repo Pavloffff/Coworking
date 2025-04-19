@@ -32,3 +32,12 @@ async def get_user_servers(
             await ServerRepository.get(session, server_id=role.server_id) for role in roles
         ]
         return servers
+
+@router.get('/{server_id}')
+async def get_server(
+    request: Request,
+    server_id: int,
+    current_user: str = Depends(get_current_user)
+):
+    async with request.app.state.database_session() as session:
+        return await ServerRepository.get(session, server_id)

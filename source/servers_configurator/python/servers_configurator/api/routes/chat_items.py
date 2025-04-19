@@ -17,24 +17,28 @@ router = APIRouter(prefix='/chat-items')
 @router.post('/add')
 async def add_chat_item(
     request: Request, 
-    file: UploadFile = File(None),
+    file: UploadFile | None = File(None),
     model: str = Form(...),
     current_user: str = Depends(get_current_user)
 ):
     file_storage_client: FileStorageClient = request.app.state.file_storage_client
     
     model_dict = json.loads(model)
-    model = ChatItemScheme(**model_dict)
+    chat_item = ChatItemScheme(**model_dict)
 
-    model: ChatItemScheme = parse_obj_as(ChatItemScheme, model)
-    if file and model.file_url is not None:
+    chat_item: ChatItemScheme = parse_obj_as(ChatItemScheme, chat_item)
+    if file and file.filename:
+        if not isinstance(file, UploadFile):
+            raise HTTPException(400, "Invalid file format")
         file_data = await file.read()
-        model.file_url = file_storage_client.insert(file.filename, file_data)
+        chat_item.file_url = file_storage_client.insert(file.filename, file_data)
+    else:
+        chat_item.file_url = ""
 
     return Processor.process_action(
         request=request,
         model_name='chat_item',
-        model=model,
+        model=chat_item,
         method='add',
         current_user=current_user,
         access_token=request.headers.get("Authorization")

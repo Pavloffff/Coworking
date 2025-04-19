@@ -31,3 +31,25 @@ export interface ServerScheme {
 	name: string
 	owner: User
 }
+
+export interface TextChannelModel {
+	text_channel_id: string
+	name: string
+	server_id: number
+}
+
+export interface ChatItemScheme {
+	chat_item_id: string
+	user_data: string
+	text_channel_id: number
+	text?: string
+	file_url?: string
+}
+
+export interface ChatItemModel {
+	chat_item_id?: number
+	user_id: number
+	text_channel_id: number
+	text: string
+	file_url?: string
+}

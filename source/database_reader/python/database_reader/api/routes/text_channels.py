@@ -18,3 +18,12 @@ async def get_servers_text_channels(
             session,
             server_id=server_id
         )
+
+@router.get('/{text_channel_id}')
+async def get_server(
+    request: Request,
+    text_channel_id: int,
+    current_user: str = Depends(get_current_user)
+):
+    async with request.app.state.database_session() as session:
+        return await TextChannelRepository.get(session, text_channel_id)

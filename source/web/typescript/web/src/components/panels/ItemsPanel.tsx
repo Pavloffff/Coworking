@@ -1,37 +1,34 @@
 import { useState, useEffect } from 'react'
 import TabPanel from './TabPanel'
 import ServersList from '../lists/ServersList'
-import { ServerModel } from '../../api/types'
+import { ServerModel, TextChannelModel } from '../../api/types'
 import { Button, Input, Typography } from 'antd'
 import { serversApi } from '../../api/servers/serversApi'
 import Cookies from 'js-cookie'
+import { textChannelsApi } from '../../api/textChannels/textChannelsApi'
+import TextChannelsList from '../lists/TextChannelsList'
 
 interface ItemsPanelProps {
 	servers?: ServerModel[] | undefined
 	onServerSelect: (serverId: string) => void
 	selectedServerId: string | null
+	textChannels?: TextChannelModel[] | undefined
+	onTextChannelSelect: (textChannelId: string) => void
+	selectedTextChannelId: string | null
 }
 
 const ItemsPanel = ({
 	servers,
 	onServerSelect,
 	selectedServerId,
+	textChannels,
+	onTextChannelSelect,
+	selectedTextChannelId,
 }: ItemsPanelProps) => {
-	const access_token = Cookies.get('access_token') as string
-	const refresh_token = Cookies.get('refresh_token') as string
-	const [selectedButton, setSelectedButton] = useState('btn1')
 	const [dimensions, setDimensions] = useState({
 		width: window.innerWidth,
 		height: window.innerHeight,
 	})
-
-	const [serverName, setServerName] = useState('')
-	const handleAddServerClick = async () => {
-		console.log('Введенное название сервера:', serverName)
-		await serversApi.addServer(serverName, access_token, refresh_token)
-		setServerName('')
-	}
-
 	useEffect(() => {
 		const handleResize = () => {
 			setDimensions({
@@ -44,6 +41,29 @@ const ItemsPanel = ({
 	}, [])
 	const containerWidth = Math.min(dimensions.width - 32, 460)
 	const containerHeight = (dimensions.height - 32) * 0.9
+
+	const access_token = Cookies.get('access_token') as string
+	const refresh_token = Cookies.get('refresh_token') as string
+	const [selectedButton, setSelectedButton] = useState('btn1')
+
+	const [serverName, setServerName] = useState('')
+	const handleAddServerClick = async () => {
+		console.log('Введенное название сервера:', serverName)
+		await serversApi.addServer(serverName, access_token, refresh_token)
+		setServerName('')
+	}
+
+	const [textChannelName, setTextChannelName] = useState('')
+	const handleAddTextChannelClick = async () => {
+		console.log('Введенное название текстового канала:', textChannelName)
+		await textChannelsApi.addTextChannel(
+			(selectedServerId ?? '-1') as unknown as number,
+			textChannelName,
+			access_token,
+			refresh_token
+		)
+		setTextChannelName('')
+	}
 
 	return (
 		<div
@@ -125,83 +145,93 @@ const ItemsPanel = ({
 					<div
 						style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
 					>
-						<Typography.Title
-							level={4}
-							style={{ marginLeft: 10, marginBottom: 16 }}
-						>
-							Текстовые каналы
-						</Typography.Title>
-						<div>{selectedServerId || -1}</div>
-						<div
-							style={{
-								display: 'flex',
-								gap: 8,
-								marginBottom: 40,
-								alignItems: 'center',
-							}}
-						>
-							<Input
-								placeholder="Создать текстовый канал"
-								style={{ flex: 1 }}
-								size="large"
-								value={serverName}
-								onChange={e => setServerName(e.target.value)}
-								onPressEnter={handleAddServerClick}
-							/>
-							<Button
-								type="primary"
-								style={{
-									width: 40,
-									height: 40,
-									flexShrink: 0,
-									fontSize: '18px',
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-								}}
-								onClick={handleAddServerClick}
+						<div>
+							<Typography.Title
+								level={4}
+								style={{ marginLeft: 10, marginBottom: 16 }}
 							>
-								+
-							</Button>
+								Текстовые каналы
+							</Typography.Title>
+							<div style={{ flex: 1, overflowY: 'auto' }}>
+								<TextChannelsList
+									data={textChannels || []}
+									selectedTextChannelId={selectedTextChannelId}
+									onItemClick={onTextChannelSelect}
+								/>
+							</div>
+							<div
+								style={{
+									display: 'flex',
+									gap: 8,
+									marginTop: 40,
+									alignItems: 'center',
+								}}
+							>
+								<Input
+									placeholder="Создать текстовый канал"
+									style={{ flex: 1 }}
+									size="large"
+									value={textChannelName}
+									onChange={e => setTextChannelName(e.target.value)}
+									onPressEnter={handleAddTextChannelClick}
+								/>
+								<Button
+									type="primary"
+									style={{
+										width: 40,
+										height: 40,
+										flexShrink: 0,
+										fontSize: '18px',
+										display: 'flex',
+										alignItems: 'center',
+										justifyContent: 'center',
+									}}
+									onClick={handleAddTextChannelClick}
+								>
+									+
+								</Button>
+							</div>
 						</div>
-						<Typography.Title
-							level={4}
-							style={{ marginLeft: 10, marginBottom: 16 }}
-						>
-							Голосовые каналы
-						</Typography.Title>
-						<div>{selectedServerId || -1}</div>
-						<div
-							style={{
-								display: 'flex',
-								gap: 8,
-								marginBottom: 40,
-								alignItems: 'center',
-							}}
-						>
-							<Input
-								placeholder="Создать голосовой канал"
-								style={{ flex: 1 }}
-								size="large"
-								value={serverName}
-								onChange={e => setServerName(e.target.value)}
-								onPressEnter={handleAddServerClick}
-							/>
-							<Button
-								type="primary"
-								style={{
-									width: 40,
-									height: 40,
-									flexShrink: 0,
-									fontSize: '18px',
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-								}}
-								onClick={handleAddServerClick}
+						<div>
+							<Typography.Title
+								level={4}
+								style={{ marginLeft: 10, marginBottom: 16 }}
 							>
-								+
-							</Button>
+								Голосовые каналы
+							</Typography.Title>
+							<div>{selectedServerId || -1}</div>
+							<div
+								style={{
+									display: 'flex',
+									gap: 8,
+									marginTop: 40,
+									alignItems: 'center',
+								}}
+							>
+								<Input
+									placeholder="Создать голосовой канал"
+									style={{ flex: 1 }}
+									size="large"
+									value={serverName}
+									onChange={e => setServerName(e.target.value)}
+									onPressEnter={handleAddServerClick}
+								/>
+								<Button
+									type="primary"
+									style={{
+										width: 40,
+										height: 40,
+										flexShrink: 0,
+										fontSize: '18px',
+										display: 'flex',
+										alignItems: 'center',
+										justifyContent: 'center',
+									}}
+									onClick={handleAddServerClick}
+								>
+									+
+								</Button>
+							</div>
 						</div>
 					</div>
 				) : (
