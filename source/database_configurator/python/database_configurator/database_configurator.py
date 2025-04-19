@@ -33,6 +33,7 @@ class DatabaseConfigurator:
         method = message['method']
         data = message['data']
         current_user = message['current_user']
+        data['current_user'] = current_user
         
         repository = RepositoriesFactory.get_repository(model)
         

@@ -2,50 +2,9 @@ import { useState, useEffect } from 'react'
 import TabPanel from './TabPanel'
 import ServersList from '../lists/ServersList'
 import { ServerModel } from '../../api/types'
-// import { serversApi } from '../../api/servers/serversApi'
-// import { v4 as uuidv4 } from 'uuid'
-// import { config } from '../../config/config'
-// import Cookies from 'js-cookie'
-// import { useQuery, useQueryClient } from '@tanstack/react-query'
-// import useWebSocket from 'react-use-websocket'
-
-// const useServers = () => {
-// 	const queryClient = useQueryClient()
-// 	const access_token = Cookies.get('access_token') as string
-
-// 	// HTTP запрос с использованием React Query
-// 	const {
-// 		data: servers,
-// 		isLoading,
-// 		error,
-// 	} = useQuery<ServerModel[]>({
-// 		queryKey: ['servers'],
-// 		queryFn: () =>
-// 			serversApi.getUserServers(access_token).then(res => res.data),
-// 		enabled: !!access_token,
-// 		refetchOnMount: true,
-// 	})
-
-// 	// WebSocket подключение
-// 	const { sendMessage } = useWebSocket(
-// 		`${
-// 			config.notifications_pisher_ws_endpoint
-// 		}/${uuidv4()}?token=${access_token}`,
-// 		{
-// 			onMessage: () => {
-// 				// Инвалидируем кэш при получении сообщения
-// 				queryClient.invalidateQueries({ queryKey: ['servers'] })
-// 			},
-// 			shouldReconnect: () => true,
-// 			reconnectAttempts: 10,
-// 			reconnectInterval: 3000,
-// 			onError: error => console.error('WebSocket error:', error),
-// 			queryParams: { token: access_token },
-// 		}
-// 	)
-
-// 	return { servers, isLoading, error, sendMessage }
-// }
+import { Button, Input, Typography } from 'antd'
+import { serversApi } from '../../api/servers/serversApi'
+import Cookies from 'js-cookie'
 
 interface ItemsPanelProps {
 	servers?: ServerModel[] | undefined
@@ -58,12 +17,20 @@ const ItemsPanel = ({
 	onServerSelect,
 	selectedServerId,
 }: ItemsPanelProps) => {
+	const access_token = Cookies.get('access_token') as string
+	const refresh_token = Cookies.get('refresh_token') as string
 	const [selectedButton, setSelectedButton] = useState('btn1')
 	const [dimensions, setDimensions] = useState({
 		width: window.innerWidth,
 		height: window.innerHeight,
 	})
-	// const { servers } = useServers()
+
+	const [serverName, setServerName] = useState('')
+	const handleAddServerClick = async () => {
+		console.log('Введенное название сервера:', serverName)
+		await serversApi.addServer(serverName, access_token, refresh_token)
+		setServerName('')
+	}
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -78,30 +45,6 @@ const ItemsPanel = ({
 	const containerWidth = Math.min(dimensions.width - 32, 460)
 	const containerHeight = (dimensions.height - 32) * 0.9
 
-	// useEffect(() => {
-	// 	console.log(Cookies.get('access_token'))
-	// 	const token = Cookies.get('access_token') as string
-	// 	const fetchServers = async () => {
-	// 		try {
-	// 			const response = await serversApi.getUserServers(token)
-	// 			setServers(response.data)
-	// 		} catch (error) {
-	// 			console.error('Error fetching servers:', error)
-	// 		}
-	// 	}
-	// 	const ws = new WebSocket(
-	// 		`${
-	// 			config.notifications_pisher_ws_endpoint
-	// 		}/${uuidv4()}?token=${Cookies.get('access_token')}`
-	// 	)
-	// 	ws.onmessage = () => {
-	// 		fetchServers()
-	// 	}
-
-	// 	// fetchServers()
-
-	// 	return () => {}
-	// })
 	return (
 		<div
 			style={{
@@ -128,15 +71,146 @@ const ItemsPanel = ({
 				}}
 			>
 				{selectedButton == 'btn1' ? (
-					<ServersList
-						data={servers || []}
-						selectedServerId={selectedServerId}
-						onItemClick={onServerSelect}
-					/>
+					<div
+						style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+					>
+						<Typography.Title
+							level={3}
+							style={{ marginLeft: 10, marginBottom: 16 }}
+						>
+							Список серверов
+						</Typography.Title>
+
+						<div style={{ flex: 1, overflowY: 'auto' }}>
+							<ServersList
+								data={servers || []}
+								selectedServerId={selectedServerId}
+								onItemClick={onServerSelect}
+							/>
+						</div>
+						<div
+							style={{
+								display: 'flex',
+								gap: 8,
+								marginBottom: 40,
+								alignItems: 'center',
+							}}
+						>
+							<Input
+								placeholder="Создать сервер"
+								style={{ flex: 1 }}
+								size="large"
+								value={serverName}
+								onChange={e => setServerName(e.target.value)}
+								onPressEnter={handleAddServerClick}
+							/>
+							<Button
+								type="primary"
+								style={{
+									width: 40,
+									height: 40,
+									flexShrink: 0,
+									fontSize: '18px',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+								}}
+								onClick={handleAddServerClick}
+							>
+								+
+							</Button>
+						</div>
+					</div>
 				) : selectedButton == 'btn2' ? (
-					<div>{selectedServerId || -1}</div>
+					<div
+						style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+					>
+						<Typography.Title
+							level={4}
+							style={{ marginLeft: 10, marginBottom: 16 }}
+						>
+							Текстовые каналы
+						</Typography.Title>
+						<div>{selectedServerId || -1}</div>
+						<div
+							style={{
+								display: 'flex',
+								gap: 8,
+								marginBottom: 40,
+								alignItems: 'center',
+							}}
+						>
+							<Input
+								placeholder="Создать текстовый канал"
+								style={{ flex: 1 }}
+								size="large"
+								value={serverName}
+								onChange={e => setServerName(e.target.value)}
+								onPressEnter={handleAddServerClick}
+							/>
+							<Button
+								type="primary"
+								style={{
+									width: 40,
+									height: 40,
+									flexShrink: 0,
+									fontSize: '18px',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+								}}
+								onClick={handleAddServerClick}
+							>
+								+
+							</Button>
+						</div>
+						<Typography.Title
+							level={4}
+							style={{ marginLeft: 10, marginBottom: 16 }}
+						>
+							Голосовые каналы
+						</Typography.Title>
+						<div>{selectedServerId || -1}</div>
+						<div
+							style={{
+								display: 'flex',
+								gap: 8,
+								marginBottom: 40,
+								alignItems: 'center',
+							}}
+						>
+							<Input
+								placeholder="Создать голосовой канал"
+								style={{ flex: 1 }}
+								size="large"
+								value={serverName}
+								onChange={e => setServerName(e.target.value)}
+								onPressEnter={handleAddServerClick}
+							/>
+							<Button
+								type="primary"
+								style={{
+									width: 40,
+									height: 40,
+									flexShrink: 0,
+									fontSize: '18px',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+								}}
+								onClick={handleAddServerClick}
+							>
+								+
+							</Button>
+						</div>
+					</div>
 				) : (
-					'234e234'
+					<Typography.Title
+						level={4}
+						style={{ marginLeft: 10, marginBottom: 16 }}
+					>
+						Участники сервера
+					</Typography.Title>
 				)}
 			</div>
 			<div style={{ width: '100%' }}>

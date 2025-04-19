@@ -1,36 +1,46 @@
 import { AxiosResponse } from 'axios'
-import { ServerModel } from '../types'
+import { ServerModel, ServerScheme } from '../types'
 import databaseReaderApiClient from '../databaseReaderClient'
-import Cookies from 'js-cookie'
+import { handleApiRequest } from '../apiHandler'
+import serversConfiguratorApiClient from '../serversConfiguratorClient'
 
 export const serversApi = {
 	getUserServers: async (
 		access_token: string,
 		refresh_token: string
 	): Promise<AxiosResponse<ServerModel[]>> => {
-		try {
-			return databaseReaderApiClient.get('/servers/user', {
-				headers: {
-					Authorization: `Bearer ${access_token}`,
+		return handleApiRequest<ServerModel[]>({
+			method: 'get',
+			url: '/servers/user',
+			access_token,
+			refresh_token,
+			apiClient: databaseReaderApiClient,
+		})
+	},
+	addServer: async (
+		name: string,
+		access_token: string,
+		refresh_token: string
+	): Promise<AxiosResponse<ServerScheme>> => {
+		return handleApiRequest<ServerScheme>({
+			method: 'post',
+			url: '/servers/add',
+			data: {
+				server_id: 0,
+				name: name,
+				owner: {
+					user_id: 0,
+					name: '',
+					email: '',
+					tag: 0,
+					password_hash: '',
+					password_salt: '',
+					avatar_url: '',
 				},
-			})
-		} catch (error) {
-			console.log(error)
-			const refresh_response = await databaseReaderApiClient.post(
-				'/users/refresh',
-				{
-					access_token,
-					refresh_token,
-				}
-			)
-			const { access, refresh } = refresh_response.data
-			Cookies.set('access_token', access, { expires: 1 })
-			Cookies.set('refresh_token', refresh, { expires: 7 })
-			return databaseReaderApiClient.get('/servers/user', {
-				headers: {
-					Authorization: `Bearer ${access_token}`,
-				},
-			})
-		}
+			},
+			access_token,
+			refresh_token,
+			apiClient: serversConfiguratorApiClient,
+		})
 	},
 }

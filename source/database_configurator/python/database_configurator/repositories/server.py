@@ -11,11 +11,11 @@ from database_configurator.database_utils.user_checker import UserChecker
 class ServerRepository(BaseRepository):
     @staticmethod
     async def insert(session: AsyncSession, data: dict):
-        owner_id = data['owner']['user_id']
-        owner_query = select(User).where(User.user_id == owner_id)
+        owner_query = select(User).where(User.email == data['current_user'])
         owner = (await session.execute(owner_query)).scalar_one_or_none()
         if owner is None:
             return
+        owner_id = owner.user_id
         server = Server(
             owner_id=owner_id,
             name=data['name']

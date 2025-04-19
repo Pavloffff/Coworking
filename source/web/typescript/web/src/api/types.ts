@@ -25,3 +25,9 @@ export interface ServerModel {
 	server_id: string
 	// avatar_url?: string
 }
+
+export interface ServerScheme {
+	server_id?: number
+	name: string
+	owner: User
+}

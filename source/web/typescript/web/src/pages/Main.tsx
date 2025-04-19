@@ -113,9 +113,11 @@ const Main = () => {
 	}, [])
 
 	const handleLogout = useCallback(() => {
-		Cookies.remove('access_token')
-		Cookies.remove('refresh_token')
-		navigate('/login')
+		//TODO: обратно
+		// Cookies.remove('access_token')
+		// Cookies.remove('refresh_token')
+		// navigate('/login')
+		navigate('/')
 	}, [navigate])
 
 	const { data: servers, refetch } = useQuery<ServerModel[]>({
