@@ -43,6 +43,7 @@ const ChatItem: React.FC<ChatItemProps> = ({ photo, name, text }) => {
 					style={{
 						fontSize: '14px',
 						color: '#555',
+						whiteSpace: 'pre',
 					}}
 				>
 					<Paragraph> {text} </Paragraph>

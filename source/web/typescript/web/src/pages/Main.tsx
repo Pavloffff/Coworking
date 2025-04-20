@@ -14,6 +14,7 @@ import { ChatItemScheme, ServerModel, TextChannelModel } from '../api/types'
 import { useNavigate } from 'react-router-dom'
 import { textChannelsApi } from '../api/textChannels/textChannelsApi'
 import { chatItemsApi } from '../api/chatItems/chatItemsApi'
+import { userApi } from '../api/user/userApi'
 
 const Main = () => {
 	const navigate = useNavigate()
@@ -92,7 +93,7 @@ const Main = () => {
 		enabled: !!selectedServerId,
 	})
 
-	const { data: currentServer } = useQuery({
+	const { data: currentServer, refetch: refetchServer } = useQuery({
 		queryKey: ['currentServer', selectedServerId],
 		queryFn: async () => {
 			if (!selectedServerId) return null
@@ -111,7 +112,7 @@ const Main = () => {
 		enabled: !!selectedServerId,
 	})
 
-	const { data: currentTextChannel } = useQuery({
+	const { data: currentTextChannel, refetch: refetchTextChannel } = useQuery({
 		queryKey: ['currentTextChannel', selectedTextChannelId],
 		queryFn: async () => {
 			if (!selectedTextChannelId) return null
@@ -128,6 +129,20 @@ const Main = () => {
 		staleTime: Infinity,
 		retry: false,
 		enabled: !!selectedServerId,
+	})
+
+	const { data: currentUser, refetch: refetchUser } = useQuery({
+		queryKey: ['currentUser'],
+		queryFn: async () => {
+			const response = await userApi.getCurrentUser(access_token, refresh_token)
+			return response.data
+		},
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		staleTime: Infinity,
+		retry: false,
+		enabled: !!access_token,
 	})
 
 	const { data: chatItems, refetch: refetchChat } = useQuery<ChatItemScheme[]>({
@@ -214,10 +229,28 @@ const Main = () => {
 	}, [servers])
 
 	useEffect(() => {
+		if (access_token) {
+			refetchUser()
+		}
+	}, [access_token, refetchUser])
+
+	useEffect(() => {
 		if (isMounted.current && lastMessage) {
 			refetchChat()
 		}
 	}, [lastMessage, refetchChat])
+
+	useEffect(() => {
+		if (selectedServerId) {
+			refetchServer()
+		}
+	}, [selectedServerId, refetchServer])
+
+	useEffect(() => {
+		if (selectedTextChannelId) {
+			refetchTextChannel()
+		}
+	}, [selectedTextChannelId, refetchTextChannel])
 
 	useEffect(() => {
 		if (selectedTextChannelId) {
@@ -333,7 +366,13 @@ const Main = () => {
 							minHeight: 0,
 						}}
 					>
-						<InputPanel />
+						<InputPanel
+							currentUserId={currentUser?.user_id || 0}
+							selectedTextChannelId={
+								selectedTextChannelId ? parseInt(selectedTextChannelId) : null
+							}
+							refetchChat={refetchChat}
+						/>
 					</div>
 				</div>
 			</div>

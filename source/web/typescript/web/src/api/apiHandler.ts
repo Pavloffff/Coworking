@@ -22,6 +22,9 @@ export async function handleApiRequest<T>(
 			data: config.data,
 			headers: {
 				Authorization: `Bearer ${config.access_token}`,
+				...(config.data instanceof FormData
+					? {}
+					: { 'Content-Type': 'application/json' }),
 			},
 		})
 	} catch (error) {

@@ -12,3 +12,11 @@ class VoiceChannelRepository:
             stmt = stmt.where(VoiceChannel.server_id == server_id)
         response = await session.scalars(statement=stmt)
         return response.all()
+    
+    @staticmethod
+    async def get(session: AsyncSession, voice_channel_id: int) -> VoiceChannel:
+        stmt = select(VoiceChannel).where(
+            VoiceChannel.voice_channel_id == voice_channel_id
+        )
+        response = await session.execute(stmt)
+        return response.scalar_one_or_none()

@@ -15,8 +15,8 @@ const GreyButton = (props: GreyButtonProps) => {
 			type="default"
 			icon={icon}
 			style={{
-				width: '64px',
-				height: '64px',
+				width: '50px',
+				height: '50px',
 				borderRadius: '50%',
 				backgroundColor: shade,
 				border: 'none',

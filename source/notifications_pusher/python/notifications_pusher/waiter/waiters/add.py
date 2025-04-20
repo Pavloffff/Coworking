@@ -10,7 +10,8 @@ RETRY_TIMEOUT = 0.1
 async def wait_add(client: DatabaseReaderClient, endpoint: str, data: dict, access_token: str):
     params = {}
     _logger.error(endpoint)
-    for  key, value in data.items():
+    endpoint = endpoint.replace('_', '-')
+    for key, value in data.items():
         if key not in ['password_hash', 'password_salt'] and value is not None:
             if (isinstance(value, str) and value != '') or (isinstance(value, int) and value > 0):
                 params[key] = value
@@ -21,5 +22,5 @@ async def wait_add(client: DatabaseReaderClient, endpoint: str, data: dict, acce
             (isinstance(response, list) and len(response) == 0)):
             await asyncio.sleep(RETRY_TIMEOUT)
             continue
-        return True
-    return False
+        return response
+    return None

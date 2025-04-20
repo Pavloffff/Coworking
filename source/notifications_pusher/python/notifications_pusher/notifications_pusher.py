@@ -13,6 +13,8 @@ from notifications_pusher.logger import _logger
 from notifications_pusher.waiter.waiter_strategy import WaiterStrategy
 from notifications_pusher.redis_utils.client import RedisClient
 from notifications_pusher.api.utils.token_processor import TokenProcessor
+from notifications_pusher.getters.user_getter import UserGetter
+from notifications_pusher.database_reader_utils.client import DatabaseReaderClient
 
 
 class NotificationsPusher:
@@ -34,8 +36,11 @@ class NotificationsPusher:
         self._kafka_reader = Reader(
             config=self._config.kafka_config
         )
+        self._database_reader_client = DatabaseReaderClient(
+            self._config.database_reader_config
+        )
         self._waiter_strategy = WaiterStrategy(
-            config=self._config
+            client=self._database_reader_client
         )
     
     async def run(self):
@@ -85,15 +90,15 @@ class NotificationsPusher:
         data = message['data']
         access_token = message.get('access_token')
         
-        # TODO: вернуть
-        # response_flag = await self._waiter_strategy.wait(model, method, data, access_token)
-        # if response_flag:
-        #     _logger.error(f'PUSHED {message}')
-        #     await ws_manager.broadcast(f'PUSHED {message}')
-
-        await ws_manager.send_to_user(
-            message=json.dumps(message),
-            current_user='master@master.com',
-            storage=self._app.state.redis_client,
-        )
-        
+        response_list = await self._waiter_strategy.wait(model, method, data, access_token)
+        if response_list is not None:
+            for response_data in response_list:
+                users_to_notify = await UserGetter.get(
+                    self._database_reader_client, response_data, model, access_token
+                )
+                for user in users_to_notify:
+                    await ws_manager.send_to_user(
+                        message=json.dumps(message),
+                        current_user=user['email'],
+                        storage=self._app.state.redis_client,
+                    )

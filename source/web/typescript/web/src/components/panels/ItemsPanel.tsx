@@ -152,7 +152,7 @@ const ItemsPanel = ({
 							>
 								Текстовые каналы
 							</Typography.Title>
-							<div style={{ flex: 1, overflowY: 'auto' }}>
+							<div style={{ flex: 1, overflowY: 'auto', maxHeight: '200px' }}>
 								<TextChannelsList
 									data={textChannels || []}
 									selectedTextChannelId={selectedTextChannelId}

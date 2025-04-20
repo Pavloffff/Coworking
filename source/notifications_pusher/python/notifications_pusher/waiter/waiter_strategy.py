@@ -4,11 +4,8 @@ from notifications_pusher.waiter.waiters import WAITERS
 
 
 class WaiterStrategy:
-    def __init__(self, config: Config):
-        self._client = DatabaseReaderClient(
-            config.database_reader_config
-        )
-
+    def __init__(self, client: DatabaseReaderClient):
+        self._client = client
     async def wait(self, model: str, method: str, data: dict, access_token: str):
         return await WAITERS[method](
             self._client,

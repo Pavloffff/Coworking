@@ -9,6 +9,22 @@ from database_reader.schemas import ChatItemScheme
 
 router = APIRouter(prefix='/chat-items')
 
+@router.get('')
+async def get_chat_items(
+    request: Request,
+    user_id: int = -1,
+    text_channel_id: int = -1,
+    text: str = '',
+    current_user: str = Depends(get_current_user)
+):
+    async with request.app.state.database_session() as session:
+        return await ChatItemRepository.get_all(
+            session,
+            user_id=user_id,
+            text_channel_id=text_channel_id,
+            text=text
+        )
+
 @router.get('/text-channel')
 async def get_text_channels_chat_items(
     request: Request,

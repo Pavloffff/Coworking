@@ -63,13 +63,10 @@ async def get_users(
     request: Request,
     email: str = '',
     name: str = '',
-    tag: int = -1
+    tag: int = -1,
+    server_id: int = -1
 ):
-    _logger.error(email)
-    _logger.error(name)
-    _logger.error(tag)
     async with request.app.state.database_session() as session:
-        _logger.error(type(tag))
         return await UserRepository.get_all(session, email, name, int(tag))
 
 @router.post('/login', response_model=AuthResponse)
