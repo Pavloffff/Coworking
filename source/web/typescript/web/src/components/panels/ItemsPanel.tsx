@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import TabPanel from './TabPanel'
 import ServersList from '../lists/ServersList'
-import { ServerModel, TextChannelModel } from '../../api/types'
+import { ServerModel, TextChannelModel, User } from '../../api/types'
 import { Button, Input, Typography } from 'antd'
 import { serversApi } from '../../api/servers/serversApi'
 import Cookies from 'js-cookie'
 import { textChannelsApi } from '../../api/textChannels/textChannelsApi'
 import TextChannelsList from '../lists/TextChannelsList'
+import UsersList from '../lists/UsersList'
 
 interface ItemsPanelProps {
 	servers?: ServerModel[] | undefined
@@ -15,6 +16,7 @@ interface ItemsPanelProps {
 	textChannels?: TextChannelModel[] | undefined
 	onTextChannelSelect: (textChannelId: string) => void
 	selectedTextChannelId: string | null
+	usersList?: User[] | undefined
 }
 
 const ItemsPanel = ({
@@ -24,6 +26,7 @@ const ItemsPanel = ({
 	textChannels,
 	onTextChannelSelect,
 	selectedTextChannelId,
+	usersList,
 }: ItemsPanelProps) => {
 	const [dimensions, setDimensions] = useState({
 		width: window.innerWidth,
@@ -113,6 +116,7 @@ const ItemsPanel = ({
 								display: 'flex',
 								gap: 8,
 								marginBottom: 40,
+								marginTop: 40,
 								alignItems: 'center',
 							}}
 						>
@@ -234,12 +238,79 @@ const ItemsPanel = ({
 							</div>
 						</div>
 					</div>
+				) : selectedButton == 'btn3' ? (
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'column',
+							height: '100%',
+						}}
+					>
+						<div
+							style={{
+								display: 'flex',
+								flexDirection: 'column',
+								height: '100%',
+							}}
+						>
+							<Typography.Title
+								level={3}
+								style={{ marginLeft: 10, marginBottom: 16 }}
+							>
+								Участники сервера
+							</Typography.Title>
+							<UsersList
+								data={
+									usersList?.map(item => ({
+										email: item.email,
+										name: item.name,
+										avatar_url: item.avatar_url,
+										tag: (item.tag ?? 0).toString(),
+										user_id: (item.user_id ?? 0).toString(),
+									})) || []
+								}
+							/>
+						</div>
+						<div
+							style={{
+								display: 'flex',
+								gap: 8,
+								marginTop: 40,
+								marginBottom: 40,
+								alignItems: 'center',
+							}}
+						>
+							<Input
+								placeholder="Пригласить участника"
+								style={{ flex: 1 }}
+								size="large"
+								value={textChannelName}
+								onChange={e => setTextChannelName(e.target.value)}
+								onPressEnter={handleAddTextChannelClick}
+							/>
+							<Button
+								type="primary"
+								style={{
+									width: 40,
+									height: 40,
+									flexShrink: 0,
+									fontSize: '18px',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+								}}
+								onClick={handleAddTextChannelClick}
+							>
+								+
+							</Button>
+						</div>
+					</div>
 				) : (
 					<Typography.Title
-						level={4}
+						level={3}
 						style={{ marginLeft: 10, marginBottom: 16 }}
 					>
-						Участники сервера
+						Настройки
 					</Typography.Title>
 				)}
 			</div>

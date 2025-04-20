@@ -12,6 +12,7 @@ from database_reader.repositories import (
     VoiceChannelRepository
 )
 from database_reader.models import Role
+from database_reader.logger import _logger
 
 
 router = APIRouter(prefix='/servers')
@@ -80,19 +81,20 @@ async def get_user_servers(
             email=current_user
         )
         user = user_data[0]
+        _logger.error(user)
         user_roles = await UserRoleRepository.get_all(
             session,
             user_id=user.user_id
         )
-        role_ids = [user_role.role_id for user_role in user_roles]
-        roles: list[Role] = await RoleRepository.get_all(
-            session,
-            role_ids=role_ids
-        )
+        _logger.error(user_roles)
+        roles = set()
+        for user_role in user_roles:
+            role = await RoleRepository.get(session, user_role.role_id)
+            roles.add(role)
         servers = [
             await ServerRepository.get(session, server_id=role.server_id) for role in roles
         ]
-        return servers
+        return sorted(servers, key=lambda s: s.name)
 
 @router.get('/{server_id}')
 async def get_server(

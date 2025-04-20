@@ -16,4 +16,17 @@ export const userApi = {
 			apiClient: databaseReaderApiClient,
 		})
 	},
+	getServerUsers: async (
+		server_id: number,
+		access_token: string,
+		refresh_token: string
+	): Promise<AxiosResponse<User[]>> => {
+		return handleApiRequest<User[]>({
+			method: 'get',
+			url: `users/server_id?server_id=${server_id}`,
+			access_token,
+			refresh_token,
+			apiClient: databaseReaderApiClient,
+		})
+	},
 }

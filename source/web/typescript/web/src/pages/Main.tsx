@@ -10,7 +10,12 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { serversApi } from '../api/servers/serversApi'
 import Cookies from 'js-cookie'
-import { ChatItemScheme, ServerModel, TextChannelModel } from '../api/types'
+import {
+	ChatItemScheme,
+	ServerModel,
+	TextChannelModel,
+	User,
+} from '../api/types'
 import { useNavigate } from 'react-router-dom'
 import { textChannelsApi } from '../api/textChannels/textChannelsApi'
 import { chatItemsApi } from '../api/chatItems/chatItemsApi'
@@ -79,6 +84,25 @@ const Main = () => {
 		queryFn: async () => {
 			if (!selectedServerId) return []
 			const response = await textChannelsApi.getServerTextChannels(
+				parseInt(selectedServerId),
+				access_token,
+				refresh_token
+			)
+			return response.data
+		},
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		staleTime: Infinity,
+		retry: false,
+		enabled: !!selectedServerId,
+	})
+
+	const { data: usersList, refetch: refetchUsers } = useQuery<User[]>({
+		queryKey: ['usersList', selectedServerId],
+		queryFn: async () => {
+			if (!selectedServerId) return []
+			const response = await userApi.getServerUsers(
 				parseInt(selectedServerId),
 				access_token,
 				refresh_token
@@ -253,6 +277,12 @@ const Main = () => {
 	}, [selectedTextChannelId, refetchTextChannel])
 
 	useEffect(() => {
+		if (selectedServerId) {
+			refetchUsers()
+		}
+	}, [selectedServerId, refetchUsers])
+
+	useEffect(() => {
 		if (selectedTextChannelId) {
 			refetchChat()
 		}
@@ -305,6 +335,7 @@ const Main = () => {
 							textChannels={textChannels}
 							onTextChannelSelect={handleTextChannelSelect}
 							selectedTextChannelId={selectedTextChannelId}
+							usersList={usersList}
 						/>
 					</div>
 					<div

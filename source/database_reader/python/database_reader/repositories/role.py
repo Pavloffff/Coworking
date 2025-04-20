@@ -10,7 +10,7 @@ class RoleRepository:
         session: AsyncSession, 
         role_ids: list[int] = [], 
         server_id: int = -1
-) -> list[Role]:
+    ) -> list[Role]:
         stmt = select(Role)
         if len(role_ids) > 0:
             stmt = stmt.where(Role.role_id.in_(role_ids))
@@ -18,3 +18,12 @@ class RoleRepository:
             stmt = stmt.where(Role.server_id == server_id)
         result = await session.scalars(statement=stmt)
         return result.all()
+    
+    @staticmethod
+    async def get(
+        session: AsyncSession,
+        role_id: int = -1
+    ) -> Role:
+        stmt = select(Role).where(Role.role_id == role_id)
+        response = await session.execute(stmt)
+        return response.scalar_one_or_none()
