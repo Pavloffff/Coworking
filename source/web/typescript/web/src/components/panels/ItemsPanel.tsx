@@ -8,6 +8,7 @@ import Cookies from 'js-cookie'
 import { textChannelsApi } from '../../api/textChannels/textChannelsApi'
 import TextChannelsList from '../lists/TextChannelsList'
 import UsersList from '../lists/UsersList'
+import { userApi } from '../../api/user/userApi'
 
 interface ItemsPanelProps {
 	servers?: ServerModel[] | undefined
@@ -66,6 +67,18 @@ const ItemsPanel = ({
 			refresh_token
 		)
 		setTextChannelName('')
+	}
+
+	const [serverUserData, setserverUserData] = useState('')
+	const handleAddServerUserDataClick = async () => {
+		console.log('Введенное название текстового канала:', textChannelName)
+		await userApi.addServerUser(
+			(selectedServerId ?? '-1') as unknown as number,
+			serverUserData,
+			access_token,
+			refresh_token
+		)
+		setserverUserData('')
 	}
 
 	return (
@@ -284,9 +297,9 @@ const ItemsPanel = ({
 								placeholder="Пригласить участника"
 								style={{ flex: 1 }}
 								size="large"
-								value={textChannelName}
-								onChange={e => setTextChannelName(e.target.value)}
-								onPressEnter={handleAddTextChannelClick}
+								value={serverUserData}
+								onChange={e => setserverUserData(e.target.value)}
+								onPressEnter={handleAddServerUserDataClick}
 							/>
 							<Button
 								type="primary"
@@ -299,7 +312,7 @@ const ItemsPanel = ({
 									alignItems: 'center',
 									justifyContent: 'center',
 								}}
-								onClick={handleAddTextChannelClick}
+								onClick={handleAddServerUserDataClick}
 							>
 								+
 							</Button>

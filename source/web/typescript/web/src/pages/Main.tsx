@@ -223,10 +223,20 @@ const Main = () => {
 				}
 				if (selectedServerId) {
 					refetchChannels()
+					refetchUsers()
+					refetchChat()
 				}
 			})
 		}
-	}, [lastMessage, refetch, refetchChannels, selectedServerId, servers])
+	}, [
+		lastMessage,
+		refetch,
+		refetchChannels,
+		refetchUsers,
+		refetchChat,
+		selectedServerId,
+		servers,
+	])
 
 	// Отслеживаем монтирование компонента
 	useEffect(() => {
