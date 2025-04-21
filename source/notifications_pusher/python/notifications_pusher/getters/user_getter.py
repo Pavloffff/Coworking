@@ -9,15 +9,19 @@ class UserGetter:
         'voice_channel': 'voice_channel_id',
         'chat_item': 'chat_item_id',
         'user': 'user_id',
-        'server': 'server_id'
+        'server': 'server_id',
+        'user_server': 'server_id'
     }
 
     @classmethod
     async def get(cls, client: DatabaseReaderClient, data: dict, model: str, access_token: str):
         query_key = cls.target_params[model]
+        _logger.error(query_key)
+        _logger.error(data)
         params = {
             query_key: data[query_key]
         }
+        _logger.error(params)
         servers = await client.get(
             endpoint='servers',
             params=params,

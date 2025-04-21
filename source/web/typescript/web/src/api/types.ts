@@ -53,3 +53,8 @@ export interface ChatItemModel {
 	text: string
 	file_url?: string
 }
+
+export interface UserData {
+	server_id: number
+	user_data: string
+}

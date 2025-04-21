@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios'
-import { User } from '../types'
+import { User, UserData } from '../types'
 import { handleApiRequest } from '../apiHandler'
 import databaseReaderApiClient from '../databaseReaderClient'
 
@@ -29,4 +29,13 @@ export const userApi = {
 			apiClient: databaseReaderApiClient,
 		})
 	},
+	// addServerUser: async (
+	// 	server_id: number,
+	// 	user_data: string
+	// ): Promise<AxiosResponse<UserData>> => {
+	// 	return handleApiRequest<UserData>({
+	// 		method: 'post',
+	// 		url: ''
+	// 	})
+	// },
 }
