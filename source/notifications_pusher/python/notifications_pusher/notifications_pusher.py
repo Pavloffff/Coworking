@@ -78,11 +78,11 @@ class NotificationsPusher:
     
     async def _listen_kafka(self):
         async for message in self._kafka_reader.listen():
-            # try:
-            _logger.debug(f"Received message: {message}")
-            await self._process_message(message)
-            # except Exception as ex:
-            #     _logger.exception(f"Error processing message: {ex}")
+            try:
+                _logger.debug(f"Received message: {message}")
+                await self._process_message(message)
+            except Exception as ex:
+                _logger.exception(f"Error processing message: {ex.with_traceback()}")
 
     async def _process_message(self, message: dict):
         model = message['model']

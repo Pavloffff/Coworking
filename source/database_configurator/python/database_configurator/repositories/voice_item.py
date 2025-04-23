@@ -22,3 +22,14 @@ class VoiceItemRepository(BaseRepository):
         )
         session.add(voice_item)
         await session.commit()
+
+    @staticmethod
+    async def delete(session: AsyncSession, data: dict):
+        stmt = delete(VoiceItem).where(VoiceItem.voice_item_id == data['voice_item_id'])
+        await session.execute(statement=stmt)
+        await session.commit()
+
+    @staticmethod
+    async def validate(session: AsyncSession, method: str, current_user: str, data: dict) -> bool:
+        return True
+    

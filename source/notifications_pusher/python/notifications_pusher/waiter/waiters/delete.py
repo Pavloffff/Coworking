@@ -6,4 +6,6 @@ RETRY_TIMEOUT = 0.1
 
 
 async def wait_delete(client: DatabaseReaderClient, endpoint: str, data: dict, access_token: str):
-    pass
+    _logger.error(endpoint)
+    _logger.error(data)
+    _logger.error(access_token)

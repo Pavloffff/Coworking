@@ -13,7 +13,7 @@ router = APIRouter(prefix='/voice-items')
 async def get_voice_items(
     request: Request,
     user_id: int = -1,
-    text_channel_id: int = -1,
+    voice_channel_id: int = -1,
     text: str = '',
     current_user: str = Depends(get_current_user)
 ):
@@ -21,7 +21,7 @@ async def get_voice_items(
         return await VoiceItemRepository.get_all(
             session,
             user_id=user_id,
-            text_channel_id=text_channel_id,
+            voice_channel_id=voice_channel_id,
             text=text
         )
 
