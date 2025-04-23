@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
 import TabPanel from './TabPanel'
 import ServersList from '../lists/ServersList'
-import { ServerModel, TextChannelModel, User } from '../../api/types'
+import {
+	ServerModel,
+	TextChannelModel,
+	User,
+	VoiceChannelModel,
+} from '../../api/types'
 import { Button, Input, Typography } from 'antd'
 import { serversApi } from '../../api/servers/serversApi'
 import Cookies from 'js-cookie'
@@ -9,6 +14,8 @@ import { textChannelsApi } from '../../api/textChannels/textChannelsApi'
 import TextChannelsList from '../lists/TextChannelsList'
 import UsersList from '../lists/UsersList'
 import { userApi } from '../../api/user/userApi'
+import { voiceChannelsApi } from '../../api/voiceChannels/voiceChannelsApi'
+import VoiceChannelsList from '../lists/VoiceChannelsList'
 
 interface ItemsPanelProps {
 	servers?: ServerModel[] | undefined
@@ -18,6 +25,9 @@ interface ItemsPanelProps {
 	onTextChannelSelect: (textChannelId: string) => void
 	selectedTextChannelId: string | null
 	usersList?: User[] | undefined
+	voiceChannels?: VoiceChannelModel[] | undefined
+	onVoiceChannelSelect: (voiceChannelId: string) => void
+	selectedVoiceChannelId: string | null
 }
 
 const ItemsPanel = ({
@@ -28,6 +38,9 @@ const ItemsPanel = ({
 	onTextChannelSelect,
 	selectedTextChannelId,
 	usersList,
+	voiceChannels,
+	onVoiceChannelSelect,
+	selectedVoiceChannelId,
 }: ItemsPanelProps) => {
 	const [dimensions, setDimensions] = useState({
 		width: window.innerWidth,
@@ -69,9 +82,21 @@ const ItemsPanel = ({
 		setTextChannelName('')
 	}
 
+	const [voiceChannelName, setVoiceChannelName] = useState('')
+	const handleAddVoiceChannelClick = async () => {
+		console.log('Введенное название голосового канала:', voiceChannelName)
+		await voiceChannelsApi.addVoiceChannel(
+			(selectedServerId ?? '-1') as unknown as number,
+			voiceChannelName,
+			access_token,
+			refresh_token
+		)
+		setVoiceChannelName('')
+	}
+
 	const [serverUserData, setserverUserData] = useState('')
 	const handleAddServerUserDataClick = async () => {
-		console.log('Введенное название текстового канала:', textChannelName)
+		console.log('Введенное имя участника:', serverUserData)
 		await userApi.addServerUser(
 			(selectedServerId ?? '-1') as unknown as number,
 			serverUserData,
@@ -216,7 +241,13 @@ const ItemsPanel = ({
 							>
 								Голосовые каналы
 							</Typography.Title>
-							<div>{selectedServerId || -1}</div>
+							<div style={{ flex: 1, overflowY: 'auto', maxHeight: '200px' }}>
+								<VoiceChannelsList
+									data={voiceChannels || []}
+									selectedVoiceChannelId={selectedVoiceChannelId}
+									onItemClick={onVoiceChannelSelect}
+								/>
+							</div>
 							<div
 								style={{
 									display: 'flex',
@@ -229,9 +260,9 @@ const ItemsPanel = ({
 									placeholder="Создать голосовой канал"
 									style={{ flex: 1 }}
 									size="large"
-									value={serverName}
-									onChange={e => setServerName(e.target.value)}
-									onPressEnter={handleAddServerClick}
+									value={voiceChannelName}
+									onChange={e => setVoiceChannelName(e.target.value)}
+									onPressEnter={handleAddVoiceChannelClick}
 								/>
 								<Button
 									type="primary"
@@ -244,7 +275,7 @@ const ItemsPanel = ({
 										alignItems: 'center',
 										justifyContent: 'center',
 									}}
-									onClick={handleAddServerClick}
+									onClick={handleAddVoiceChannelClick}
 								>
 									+
 								</Button>

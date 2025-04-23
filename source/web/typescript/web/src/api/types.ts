@@ -58,3 +58,22 @@ export interface UserData {
 	server_id: number
 	user_data: string
 }
+
+export interface VoiceChannelModel {
+	voice_channel_id: string
+	name: string
+	server_id: number
+}
+
+export interface VoiceItemModel {
+	voice_item_id?: number
+	user_id: number
+	voice_channel_id: number
+}
+
+export interface VoiceItemScheme {
+	voice_item_id?: number
+	user_id: number
+	user_data: string
+	voice_channel_id: number
+}

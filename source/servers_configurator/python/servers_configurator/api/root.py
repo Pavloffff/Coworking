@@ -8,7 +8,8 @@ from .routes import (
     user_roles,
     text_channels,
     voice_channels,
-    user_servers
+    user_servers,
+    voice_items
 )
 
 api_router = APIRouter()
@@ -22,3 +23,4 @@ api_router.include_router(text_channels)
 api_router.include_router(voice_channels)
 api_router.include_router(user_roles)
 api_router.include_router(user_servers)
+api_router.include_router(voice_items)

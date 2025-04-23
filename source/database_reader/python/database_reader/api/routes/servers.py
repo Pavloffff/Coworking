@@ -8,8 +8,9 @@ from database_reader.repositories import (
     UserRoleRepository, 
     RoleRepository, 
     TextChannelRepository, 
-    ChatItemRepository, 
-    VoiceChannelRepository
+    ChatItemRepository,
+    VoiceChannelRepository,
+    VoiceItemRepository
 )
 from database_reader.models import Role
 from database_reader.logger import _logger
@@ -25,6 +26,7 @@ async def get_servers(
     text_channel_id: int = -1,
     voice_channel_id: int = -1,
     chat_item_id: int = -1,
+    voice_item_id: int = -1,
     user_id: int = -1,
     current_user: str = Depends(get_current_user)
 ):
@@ -37,7 +39,7 @@ async def get_servers(
                 server_id=text_channel.server_id
             )
         elif voice_channel_id > 0:
-            voice_channel = await VoiceChannelRepository.get(session, text_channel_id)
+            voice_channel = await VoiceChannelRepository.get(session, voice_channel_id)
             return await ServerRepository.get_all(
                 session,
                 server_id=voice_channel.server_id
@@ -48,6 +50,13 @@ async def get_servers(
             return await ServerRepository.get_all(
                 session,
                 server_id=text_channel.server_id
+            )
+        elif voice_item_id > 0:
+            voice_item = await VoiceItemRepository.get(session, voice_item_id)
+            voice_channel = await VoiceChannelRepository.get(session, voice_item.voice_item_id)
+            return await ServerRepository.get_all(
+                session,
+                server_id=voice_channel.server_id
             )
         elif user_id > 0:
             user_roles = await UserRoleRepository.get_all(

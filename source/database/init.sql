@@ -156,6 +156,22 @@ CREATE TABLE public.voicechannel (
 );
 
 
+-- public.voiceitem определение
+
+-- Drop table
+
+-- DROP TABLE public.voiceitem;
+
+CREATE TABLE public.voiceitem (
+	voice_item_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	voice_channel_id int8 NOT NULL,
+	user_id int8 NOT NULL,
+	CONSTRAINT voiceitem_pk PRIMARY KEY (voice_item_id),
+	CONSTRAINT voiceitem_user_fk FOREIGN KEY (user_id) REFERENCES public."user"(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT voiceitem_voicechannel_fk FOREIGN KEY (voice_channel_id) REFERENCES public.voicechannel(voice_channel_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
 -- public.activitychannel определение
 
 -- Drop table

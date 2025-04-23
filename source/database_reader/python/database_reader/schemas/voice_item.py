@@ -1,0 +1,9 @@
+from typing import Optional
+from pydantic import BaseModel
+
+
+class VoiceItem(BaseModel):
+    voice_item_id: int
+    user_id: int
+    user_data: str
+    voice_channel_id: int

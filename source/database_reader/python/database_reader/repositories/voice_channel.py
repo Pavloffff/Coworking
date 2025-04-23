@@ -6,10 +6,12 @@ from database_reader.models import VoiceChannel
 
 class VoiceChannelRepository:
     @staticmethod
-    async def get_all(session: AsyncSession, server_id: int = -1) -> VoiceChannel:
+    async def get_all(session: AsyncSession, server_id: int = -1, name: str = '') -> VoiceChannel:
         stmt = select(VoiceChannel)
         if server_id > 0:
             stmt = stmt.where(VoiceChannel.server_id == server_id)
+        if name != '':
+            stmt = stmt.where(VoiceChannel.name == name)
         response = await session.scalars(statement=stmt)
         return response.all()
     

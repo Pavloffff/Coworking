@@ -7,3 +7,4 @@ from .user_roles import router as user_roles
 from .text_channels import router as text_channels
 from .voice_channels import router as voice_channels
 from .user_servers import router as user_servers
+from .voice_items import router as voice_items

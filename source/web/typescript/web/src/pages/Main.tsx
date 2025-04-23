@@ -15,11 +15,13 @@ import {
 	ServerModel,
 	TextChannelModel,
 	User,
+	VoiceChannelModel,
 } from '../api/types'
 import { useNavigate } from 'react-router-dom'
 import { textChannelsApi } from '../api/textChannels/textChannelsApi'
 import { chatItemsApi } from '../api/chatItems/chatItemsApi'
 import { userApi } from '../api/user/userApi'
+import { voiceChannelsApi } from '../api/voiceChannels/voiceChannelsApi'
 
 const Main = () => {
 	const navigate = useNavigate()
@@ -43,6 +45,15 @@ const Main = () => {
 		setSelectedTextChannelId(textChannelId)
 		Cookies.set('selected_text_channel', textChannelId)
 		console.log('Selected text channel:', textChannelId)
+	}, [])
+
+	const [selectedVoiceChannelId, setSelectedVoiceChannelId] = useState<
+		string | null
+	>(null)
+	const handleVoiceChannelSelect = useCallback((voiceChannelId: string) => {
+		setSelectedVoiceChannelId(voiceChannelId)
+		Cookies.set('selected_voice_channel', voiceChannelId)
+		console.log('Selected voice channel:', voiceChannelId)
 	}, [])
 
 	const handleLogout = useCallback(() => {
@@ -84,6 +95,27 @@ const Main = () => {
 		queryFn: async () => {
 			if (!selectedServerId) return []
 			const response = await textChannelsApi.getServerTextChannels(
+				parseInt(selectedServerId),
+				access_token,
+				refresh_token
+			)
+			return response.data
+		},
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		staleTime: Infinity,
+		retry: false,
+		enabled: !!selectedServerId,
+	})
+
+	const { data: voiceChannels, refetch: refetchVoiceChannels } = useQuery<
+		VoiceChannelModel[]
+	>({
+		queryKey: ['voiceChannels', selectedServerId],
+		queryFn: async () => {
+			if (!selectedServerId) return []
+			const response = await voiceChannelsApi.getServerVoiceChannels(
 				parseInt(selectedServerId),
 				access_token,
 				refresh_token
@@ -142,6 +174,25 @@ const Main = () => {
 			if (!selectedTextChannelId) return null
 			const response = await textChannelsApi.getCurrentTextChannel(
 				parseInt(selectedTextChannelId),
+				access_token,
+				refresh_token
+			)
+			return response.data
+		},
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		staleTime: Infinity,
+		retry: false,
+		enabled: !!selectedServerId,
+	})
+
+	const { data: currentVoiceChannel, refetch: refetchVoiceChannel } = useQuery({
+		queryKey: ['currentVoiceChannel', selectedVoiceChannelId],
+		queryFn: async () => {
+			if (!selectedVoiceChannelId) return null
+			const response = await voiceChannelsApi.getCurrentVoiceChannel(
+				parseInt(selectedVoiceChannelId),
 				access_token,
 				refresh_token
 			)
@@ -223,6 +274,7 @@ const Main = () => {
 				}
 				if (selectedServerId) {
 					refetchChannels()
+					refetchVoiceChannels()
 					refetchUsers()
 					refetchChat()
 				}
@@ -232,6 +284,7 @@ const Main = () => {
 		lastMessage,
 		refetch,
 		refetchChannels,
+		refetchVoiceChannels,
 		refetchUsers,
 		refetchChat,
 		selectedServerId,
@@ -285,6 +338,12 @@ const Main = () => {
 			refetchTextChannel()
 		}
 	}, [selectedTextChannelId, refetchTextChannel])
+
+	useEffect(() => {
+		if (selectedVoiceChannelId) {
+			refetchVoiceChannel()
+		}
+	}, [selectedVoiceChannelId, refetchVoiceChannel])
 
 	useEffect(() => {
 		if (selectedServerId) {
@@ -346,6 +405,9 @@ const Main = () => {
 							onTextChannelSelect={handleTextChannelSelect}
 							selectedTextChannelId={selectedTextChannelId}
 							usersList={usersList}
+							voiceChannels={voiceChannels}
+							selectedVoiceChannelId={selectedVoiceChannelId}
+							onVoiceChannelSelect={handleVoiceChannelSelect}
 						/>
 					</div>
 					<div
@@ -365,7 +427,7 @@ const Main = () => {
 						>
 							<ProjectHeader
 								projectName={currentServer?.name || ''}
-								itemName={currentTextChannel?.name || ''}
+								itemName={currentTextChannel?.name || currentVoiceChannel?.name}
 							/>
 						</div>
 						<div

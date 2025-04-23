@@ -2,43 +2,43 @@ import { List } from 'antd'
 import Cookies from 'js-cookie'
 import { useEffect, useState } from 'react'
 
-interface TextChannelItem {
-	text_channel_id: string
+interface VoiceChannelItem {
+	voice_channel_id: string
 	name: string
 	server_id: number
 }
 
-interface TextChannelsListProps {
-	data: TextChannelItem[]
-	selectedTextChannelId?: string | null
+interface VoiceChannelsListProps {
+	data: VoiceChannelItem[]
+	selectedVoiceChannelId?: string | null
 	onItemClick?: (textChannelId: string) => void
 }
 
-const TextChannelsList = ({
+const VoiceChannelsList = ({
 	data,
-	selectedTextChannelId,
+	selectedVoiceChannelId,
 	onItemClick,
-}: TextChannelsListProps) => {
+}: VoiceChannelsListProps) => {
 	const [internalSelectedId, setInternalSelectedId] = useState<string | null>(
 		() =>
-			Cookies.get('selected_text_channel_id') ||
-			(data[0]?.text_channel_id ?? '')
+			Cookies.get('selected_voice_channel_id') ||
+			(data[0]?.voice_channel_id ?? '')
 	)
 
 	useEffect(() => {
-		if (selectedTextChannelId !== undefined) {
-			setInternalSelectedId(selectedTextChannelId)
+		if (selectedVoiceChannelId !== undefined) {
+			setInternalSelectedId(selectedVoiceChannelId)
 		}
-	}, [selectedTextChannelId])
+	}, [selectedVoiceChannelId])
 
-	const handleTextChannelClick = (textChannel: TextChannelItem) => {
+	const handleVoiceChannelClick = (textChannel: VoiceChannelItem) => {
 		const newId =
-			internalSelectedId === textChannel.text_channel_id
+			internalSelectedId === textChannel.voice_channel_id
 				? ''
-				: textChannel.text_channel_id
+				: textChannel.voice_channel_id
 		setInternalSelectedId(newId)
 		onItemClick?.(newId)
-		Cookies.set('selected_text_channel_id', newId)
+		Cookies.set('selected_voice_channel_id', newId)
 	}
 	return (
 		<List
@@ -50,13 +50,15 @@ const TextChannelsList = ({
 			renderItem={item => (
 				<List.Item
 					key={item.server_id}
-					onClick={() => handleTextChannelClick(item)}
+					onClick={() => handleVoiceChannelClick(item)}
 					style={{
 						cursor: 'pointer',
 						padding: '12px 16px',
 						borderBottom: '1px solid #f0f0f0',
 						backgroundColor:
-							item.text_channel_id === internalSelectedId ? '#f5f5f5' : 'white',
+							item.voice_channel_id === internalSelectedId
+								? '#f5f5f5'
+								: 'white',
 						transition: 'background-color 0.2s',
 					}}
 				>
@@ -83,4 +85,4 @@ const TextChannelsList = ({
 	)
 }
 
-export default TextChannelsList
+export default VoiceChannelsList

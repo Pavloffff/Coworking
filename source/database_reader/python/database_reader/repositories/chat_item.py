@@ -29,4 +29,3 @@ class ChatItemRepository:
         )
         response = await session.execute(stmt)
         return response.scalar_one_or_none()
-

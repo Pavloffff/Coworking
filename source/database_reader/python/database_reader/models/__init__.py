@@ -11,3 +11,4 @@ from .server import Server
 from .user_role import UserRole
 from .voice_channel import VoiceChannel
 from .base_model import BaseModel
+from .voice_item import VoiceItem

@@ -7,3 +7,4 @@ from .voice_channel import VoiceChannel as VoiceChannelScheme
 from .user import User as UserScheme
 from .user_role import UserRole as UserRoleScheme
 from .user_server import UserServer as UserServerScheme
+from .voice_item import VoiceItem as VoiceItemScheme

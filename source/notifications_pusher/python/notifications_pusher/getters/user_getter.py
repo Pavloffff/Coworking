@@ -8,6 +8,7 @@ class UserGetter:
         'text_channel': 'text_channel_id',
         'voice_channel': 'voice_channel_id',
         'chat_item': 'chat_item_id',
+        'voice_item': 'voice_item_id',
         'user': 'user_id',
         'server': 'server_id',
         'user_server': 'server_id'
