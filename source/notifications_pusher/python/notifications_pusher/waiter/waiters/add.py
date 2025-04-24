@@ -23,4 +23,3 @@ async def wait_add(client: DatabaseReaderClient, endpoint: str, data: dict, acce
             await asyncio.sleep(RETRY_TIMEOUT)
             continue
         return response
-    return None

@@ -6,6 +6,7 @@ import {
 	TextChannelModel,
 	User,
 	VoiceChannelModel,
+	VoiceItemScheme,
 } from '../../api/types'
 import { Button, Input, Typography } from 'antd'
 import { serversApi } from '../../api/servers/serversApi'
@@ -28,6 +29,7 @@ interface ItemsPanelProps {
 	voiceChannels?: VoiceChannelModel[] | undefined
 	onVoiceChannelSelect: (voiceChannelId: string) => void
 	selectedVoiceChannelId: string | null
+	voiceItemsByChannel?: Record<string, VoiceItemScheme[]>
 }
 
 const ItemsPanel = ({
@@ -41,6 +43,7 @@ const ItemsPanel = ({
 	voiceChannels,
 	onVoiceChannelSelect,
 	selectedVoiceChannelId,
+	voiceItemsByChannel = {},
 }: ItemsPanelProps) => {
 	const [dimensions, setDimensions] = useState({
 		width: window.innerWidth,
@@ -131,7 +134,7 @@ const ItemsPanel = ({
 					overflowY: 'auto',
 				}}
 			>
-				{selectedButton == 'btn1' ? (
+				{selectedButton === 'btn1' ? (
 					<div
 						style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
 					>
@@ -183,7 +186,7 @@ const ItemsPanel = ({
 							</Button>
 						</div>
 					</div>
-				) : selectedButton == 'btn2' ? (
+				) : selectedButton === 'btn2' ? (
 					<div
 						style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
 					>
@@ -246,6 +249,7 @@ const ItemsPanel = ({
 									data={voiceChannels || []}
 									selectedVoiceChannelId={selectedVoiceChannelId}
 									onItemClick={onVoiceChannelSelect}
+									voiceItemsByChannel={voiceItemsByChannel}
 								/>
 							</div>
 							<div
@@ -282,7 +286,7 @@ const ItemsPanel = ({
 							</div>
 						</div>
 					</div>
-				) : selectedButton == 'btn3' ? (
+				) : selectedButton === 'btn3' ? (
 					<div
 						style={{
 							display: 'flex',

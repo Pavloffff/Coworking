@@ -53,7 +53,7 @@ async def get_servers(
             )
         elif voice_item_id > 0:
             voice_item = await VoiceItemRepository.get(session, voice_item_id)
-            voice_channel = await VoiceChannelRepository.get(session, voice_item.voice_item_id)
+            voice_channel = await VoiceChannelRepository.get(session, voice_item.voice_channel_id)
             return await ServerRepository.get_all(
                 session,
                 server_id=voice_channel.server_id

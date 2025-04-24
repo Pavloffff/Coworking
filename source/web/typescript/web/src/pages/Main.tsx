@@ -6,8 +6,8 @@ import ChatPanel from '../components/panels/ChatPanel'
 import { config } from '../config/config'
 import { v4 as uuidv4 } from 'uuid'
 import useWebSocket from 'react-use-websocket'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useQuery, useQueries } from '@tanstack/react-query'
 import { serversApi } from '../api/servers/serversApi'
 import Cookies from 'js-cookie'
 import {
@@ -16,12 +16,14 @@ import {
 	TextChannelModel,
 	User,
 	VoiceChannelModel,
+	VoiceItemScheme,
 } from '../api/types'
 import { useNavigate } from 'react-router-dom'
 import { textChannelsApi } from '../api/textChannels/textChannelsApi'
 import { chatItemsApi } from '../api/chatItems/chatItemsApi'
 import { userApi } from '../api/user/userApi'
 import { voiceChannelsApi } from '../api/voiceChannels/voiceChannelsApi'
+import { voiceItemsApi } from '../api/voiceItems/voiceItemsApi'
 
 const Main = () => {
 	const navigate = useNavigate()
@@ -45,15 +47,6 @@ const Main = () => {
 		setSelectedTextChannelId(textChannelId)
 		Cookies.set('selected_text_channel', textChannelId)
 		console.log('Selected text channel:', textChannelId)
-	}, [])
-
-	const [selectedVoiceChannelId, setSelectedVoiceChannelId] = useState<
-		string | null
-	>(null)
-	const handleVoiceChannelSelect = useCallback((voiceChannelId: string) => {
-		setSelectedVoiceChannelId(voiceChannelId)
-		Cookies.set('selected_voice_channel', voiceChannelId)
-		console.log('Selected voice channel:', voiceChannelId)
 	}, [])
 
 	const handleLogout = useCallback(() => {
@@ -187,6 +180,51 @@ const Main = () => {
 		enabled: !!selectedServerId,
 	})
 
+	const { data: currentUser, refetch: refetchUser } = useQuery({
+		queryKey: ['currentUser'],
+		queryFn: async () => {
+			const response = await userApi.getCurrentUser(access_token, refresh_token)
+			return response.data
+		},
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		staleTime: Infinity,
+		retry: false,
+		enabled: !!access_token,
+	})
+
+	const [selectedVoiceChannelId, setSelectedVoiceChannelId] = useState<
+		string | null
+	>(null)
+	const handleVoiceChannelSelect = useCallback(
+		async (voiceChannelId: string) => {
+			const voiceItemsData = await voiceItemsApi.getVoiceChannelsVoiceItems(
+				parseInt(voiceChannelId),
+				access_token,
+				refresh_token
+			)
+			if (
+				voiceItemsData.data.find(item => item.user_id === currentUser?.user_id)
+			) {
+				console.log(voiceItemsData.data)
+			} else {
+				await voiceItemsApi.addVoiceItem(
+					0,
+					currentUser?.user_id || 0,
+					parseInt(voiceChannelId),
+					access_token,
+					refresh_token
+				)
+			}
+
+			setSelectedVoiceChannelId(voiceChannelId)
+			Cookies.set('selected_voice_channel', voiceChannelId)
+			console.log('Selected voice channel:', voiceChannelId)
+		},
+		[access_token, currentUser, refresh_token]
+	)
+
 	const { data: currentVoiceChannel, refetch: refetchVoiceChannel } = useQuery({
 		queryKey: ['currentVoiceChannel', selectedVoiceChannelId],
 		queryFn: async () => {
@@ -204,20 +242,6 @@ const Main = () => {
 		staleTime: Infinity,
 		retry: false,
 		enabled: !!selectedServerId,
-	})
-
-	const { data: currentUser, refetch: refetchUser } = useQuery({
-		queryKey: ['currentUser'],
-		queryFn: async () => {
-			const response = await userApi.getCurrentUser(access_token, refresh_token)
-			return response.data
-		},
-		refetchOnWindowFocus: false,
-		refetchOnMount: false,
-		refetchOnReconnect: false,
-		staleTime: Infinity,
-		retry: false,
-		enabled: !!access_token,
 	})
 
 	const { data: chatItems, refetch: refetchChat } = useQuery<ChatItemScheme[]>({
@@ -238,6 +262,32 @@ const Main = () => {
 		retry: false,
 		enabled: !!selectedTextChannelId,
 	})
+
+	const voiceItemsQueries = useQueries({
+		queries: (voiceChannels || []).map(channel => ({
+			queryKey: ['voiceItems', channel.voice_channel_id],
+			queryFn: async () => {
+				const response = await voiceItemsApi.getVoiceChannelsVoiceItems(
+					parseInt(channel.voice_channel_id),
+					access_token,
+					refresh_token
+				)
+				return response.data
+			},
+			enabled: !!voiceChannels && !!access_token,
+		})),
+	})
+
+	const voiceItemsByChannel = useMemo(() => {
+		const itemsByChannel: Record<string, VoiceItemScheme[]> = {}
+		voiceChannels?.forEach((channel, index) => {
+			const query = voiceItemsQueries[index]
+			if (query.data) {
+				itemsByChannel[channel.voice_channel_id] = query.data
+			}
+		})
+		return itemsByChannel
+	}, [voiceChannels, voiceItemsQueries])
 
 	const { lastMessage } = useWebSocket(wsUrl.current, {
 		shouldReconnect: () => false,
@@ -277,6 +327,7 @@ const Main = () => {
 					refetchVoiceChannels()
 					refetchUsers()
 					refetchChat()
+					voiceItemsQueries.map(q => q.refetch())
 				}
 			})
 		}
@@ -288,6 +339,7 @@ const Main = () => {
 		refetchUsers,
 		refetchChat,
 		selectedServerId,
+		voiceItemsQueries,
 		servers,
 	])
 
@@ -408,6 +460,7 @@ const Main = () => {
 							voiceChannels={voiceChannels}
 							selectedVoiceChannelId={selectedVoiceChannelId}
 							onVoiceChannelSelect={handleVoiceChannelSelect}
+							voiceItemsByChannel={voiceItemsByChannel}
 						/>
 					</div>
 					<div

@@ -17,8 +17,6 @@ class UserGetter:
     @classmethod
     async def get(cls, client: DatabaseReaderClient, data: dict, model: str, access_token: str):
         query_key = cls.target_params[model]
-        _logger.error(query_key)
-        _logger.error(data)
         params = {
             query_key: data[query_key]
         }
