@@ -7,3 +7,4 @@ class VoiceItem(BaseModel):
     user_id: int
     user_data: str
     voice_channel_id: int
+    server_id: int

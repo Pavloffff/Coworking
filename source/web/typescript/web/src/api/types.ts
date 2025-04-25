@@ -69,6 +69,7 @@ export interface VoiceItemModel {
 	voice_item_id?: number
 	user_id: number
 	voice_channel_id: number
+	server_id: number
 }
 
 export interface VoiceItemScheme {

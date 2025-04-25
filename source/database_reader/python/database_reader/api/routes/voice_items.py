@@ -44,7 +44,8 @@ async def get_voice_channels_voice_items(
                 voice_item_id=item.voice_item_id,
                 voice_channel_id=item.voice_channel_id,
                 user_id=user.user_id,
-                user_data=f'{user.name}#{str(user.tag % 10000).zfill(4)}'
+                user_data=f'{user.name}#{str(user.tag % 10000).zfill(4)}',
+                server_id=0
             ))
         return voice_items
 

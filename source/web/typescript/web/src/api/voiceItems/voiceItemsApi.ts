@@ -25,13 +25,32 @@ export const voiceItemsApi = {
 		access_token: string,
 		refresh_token: string
 	): Promise<AxiosResponse<VoiceItemModel>> => {
-		return handleApiRequest<VoiceItemScheme>({
+		return handleApiRequest<VoiceItemModel>({
 			method: 'post',
 			url: 'voice-items/add',
 			data: {
 				voice_item_id: voice_item_id || 0,
 				user_id: user_id,
 				voice_channel_id: voice_channel_id,
+				server_id: 0,
+			},
+			access_token,
+			refresh_token,
+			apiClient: serversConfiguratorApiClient,
+		})
+	},
+	deleteVoiceItem: async (
+		voice_item_id: number,
+		server_id: number,
+		access_token: string,
+		refresh_token: string
+	): Promise<AxiosResponse<VoiceItemModel>> => {
+		return handleApiRequest<VoiceItemModel>({
+			method: 'delete',
+			url: 'voice-items/delete',
+			data: {
+				voice_item_id: voice_item_id,
+				server_id: server_id,
 			},
 			access_token,
 			refresh_token,
