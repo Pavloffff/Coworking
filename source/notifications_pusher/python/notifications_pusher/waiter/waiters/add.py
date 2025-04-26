@@ -22,4 +22,4 @@ async def wait_add(client: DatabaseReaderClient, endpoint: str, data: dict, acce
             (isinstance(response, list) and len(response) == 0)):
             await asyncio.sleep(RETRY_TIMEOUT)
             continue
-        return response, endpoint[:-1]
+        return response, endpoint[:-1].replace('-', '_')
