@@ -41,7 +41,7 @@ const VoiceChannelsList = ({
 				: textChannel.voice_channel_id
 		setInternalSelectedId(newId)
 		onItemClick?.(newId)
-		Cookies.set('selected_voice_channel_id', newId)
+		// Cookies.set('selected_voice_channel_id', newId)
 	}
 	return (
 		<List

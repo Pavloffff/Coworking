@@ -4,12 +4,25 @@ version: '3.8'
 #TODO: выпилить маппинг ненужных портов
 #TODO: переименовать postgres_data
 services:
+  coworking-nginx-gateway:
+    build: 'source/nginx_gateway'
+    depends_on:
+      - coworking-notifications-pusher
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./source/nginx_gateway/ssl:/etc/ssl
+    networks:
+      - coworking-network
+    restart: always
+
   coworking-notifications-pusher:
     build: 'source/notifications_pusher/python'
     depends_on:
       - coworking-database-reader
       - coworking-kafka
-      # - coworking-web
+      - coworking-web
     environment:
       SERVICE_NAME: coworking-notifications-pusher
       API_V1_STR: '/api/v1'
@@ -36,18 +49,18 @@ services:
       - coworking-network
     restart: always
 
-  # coworking-web:
-  #   build: source/web/typescript
-  #   depends_on:
-  #     - coworking-servers-configurator
-  #     - coworking-database-reader
-  #   environment:
-  #     SERVICE_NAME: coworking-web
-  #   ports:
-  #     - 80:5173
-  #   networks:
-  #     - coworking-network
-  #   restart: always
+  coworking-web:
+    build: source/web/typescript
+    depends_on:
+      - coworking-servers-configurator
+      - coworking-database-reader
+    environment:
+      SERVICE_NAME: coworking-web
+    ports:
+      - 5174:5173
+    networks:
+      - coworking-network
+    restart: always
 
   coworking-database-reader:
     build: 'source/database_reader/python'

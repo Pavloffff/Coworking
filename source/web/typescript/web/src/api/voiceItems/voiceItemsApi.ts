@@ -51,6 +51,8 @@ export const voiceItemsApi = {
 			data: {
 				voice_item_id: voice_item_id,
 				server_id: server_id,
+				user_id: 0,
+				voice_channel_id: 0,
 			},
 			access_token,
 			refresh_token,

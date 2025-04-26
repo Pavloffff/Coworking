@@ -33,9 +33,10 @@ const Login = () => {
 
 	const handleAuthSuccess = (response: AxiosResponse<AuthResponse>) => {
 		const { access_token, refresh_token } = response.data
-		Cookies.set('access_token', access_token, { expires: 1 })
-		Cookies.set('refresh_token', refresh_token, { expires: 7 })
-
+		// Cookies.set('access_token', access_token, { expires: 1 })
+		// Cookies.set('refresh_token', refresh_token, { expires: 7 })
+		localStorage.setItem('access_token', access_token)
+		localStorage.setItem('refresh_token', refresh_token)
 		navigate('/')
 	}
 

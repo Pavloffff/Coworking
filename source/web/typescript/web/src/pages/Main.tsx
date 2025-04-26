@@ -27,8 +27,23 @@ import { voiceItemsApi } from '../api/voiceItems/voiceItemsApi'
 
 const Main = () => {
 	const navigate = useNavigate()
-	const access_token = Cookies.get('access_token') as string
-	const refresh_token = Cookies.get('refresh_token') as string
+	const [access_token, setAccessToken] = useState<string | null>(null)
+	const [refresh_token, setRefreshToken] = useState<string | null>(null)
+
+	useEffect(() => {
+		// Синхронизация при монтировании
+		const access = localStorage.getItem('access_token')
+		const refresh = localStorage.getItem('refresh_token')
+
+		if (access && refresh) {
+			Cookies.set('access_token', access, { secure: true, sameSite: 'Lax' })
+			Cookies.set('refresh_token', refresh, { secure: true, sameSite: 'Lax' })
+			setAccessToken(access)
+			setRefreshToken(refresh)
+		} else {
+			navigate('/login')
+		}
+	}, [navigate])
 
 	const isMounted = useRef(false) // Добавляем реф для отслеживания монтирования
 	const wsUrl = useRef<string>('')
@@ -50,10 +65,11 @@ const Main = () => {
 	}, [])
 
 	const handleLogout = useCallback(() => {
-		//TODO: обратно вернуть логику
-		// Cookies.remove('access_token')
-		// Cookies.remove('refresh_token')
-		// navigate('/login')
+		localStorage.removeItem('access_token')
+		localStorage.removeItem('refresh_token')
+		Cookies.remove('access_token')
+		Cookies.remove('refresh_token')
+		navigate('/login')
 		navigate('/')
 	}, [navigate])
 
@@ -62,8 +78,8 @@ const Main = () => {
 		queryFn: async (): Promise<ServerModel[]> => {
 			try {
 				const response = await serversApi.getUserServers(
-					access_token,
-					refresh_token
+					access_token!,
+					refresh_token!
 				)
 				return response.data
 			} catch (error) {
@@ -89,8 +105,8 @@ const Main = () => {
 			if (!selectedServerId) return []
 			const response = await textChannelsApi.getServerTextChannels(
 				parseInt(selectedServerId),
-				access_token,
-				refresh_token
+				access_token!,
+				refresh_token!
 			)
 			return response.data
 		},
@@ -110,8 +126,8 @@ const Main = () => {
 			if (!selectedServerId) return []
 			const response = await voiceChannelsApi.getServerVoiceChannels(
 				parseInt(selectedServerId),
-				access_token,
-				refresh_token
+				access_token!,
+				refresh_token!
 			)
 			return response.data
 		},
@@ -129,8 +145,8 @@ const Main = () => {
 			if (!selectedServerId) return []
 			const response = await userApi.getServerUsers(
 				parseInt(selectedServerId),
-				access_token,
-				refresh_token
+				access_token!,
+				refresh_token!
 			)
 			return response.data
 		},
@@ -148,8 +164,8 @@ const Main = () => {
 			if (!selectedServerId) return null
 			const response = await serversApi.getCurrentServer(
 				parseInt(selectedServerId),
-				access_token,
-				refresh_token
+				access_token!,
+				refresh_token!
 			)
 			return response.data
 		},
@@ -167,8 +183,8 @@ const Main = () => {
 			if (!selectedTextChannelId) return null
 			const response = await textChannelsApi.getCurrentTextChannel(
 				parseInt(selectedTextChannelId),
-				access_token,
-				refresh_token
+				access_token!,
+				refresh_token!
 			)
 			return response.data
 		},
@@ -183,7 +199,10 @@ const Main = () => {
 	const { data: currentUser, refetch: refetchUser } = useQuery({
 		queryKey: ['currentUser'],
 		queryFn: async () => {
-			const response = await userApi.getCurrentUser(access_token, refresh_token)
+			const response = await userApi.getCurrentUser(
+				access_token!,
+				refresh_token!
+			)
 			return response.data
 		},
 		refetchOnWindowFocus: false,
@@ -194,64 +213,14 @@ const Main = () => {
 		enabled: !!access_token,
 	})
 
-	const [selectedVoiceChannelId, setSelectedVoiceChannelId] = useState<
-		string | null
-	>(null)
-	const handleVoiceChannelSelect = useCallback(
-		async (voiceChannelId: string) => {
-			const voiceItemsData = await voiceItemsApi.getVoiceChannelsVoiceItems(
-				parseInt(voiceChannelId),
-				access_token,
-				refresh_token
-			)
-			if (
-				voiceItemsData.data.find(item => item.user_id === currentUser?.user_id)
-			) {
-				console.log(voiceItemsData.data)
-			} else {
-				await voiceItemsApi.addVoiceItem(
-					0,
-					currentUser?.user_id || 0,
-					parseInt(voiceChannelId),
-					access_token,
-					refresh_token
-				)
-			}
-
-			setSelectedVoiceChannelId(voiceChannelId)
-			Cookies.set('selected_voice_channel', voiceChannelId)
-			console.log('Selected voice channel:', voiceChannelId)
-		},
-		[access_token, currentUser, refresh_token]
-	)
-
-	const { data: currentVoiceChannel, refetch: refetchVoiceChannel } = useQuery({
-		queryKey: ['currentVoiceChannel', selectedVoiceChannelId],
-		queryFn: async () => {
-			if (!selectedVoiceChannelId) return null
-			const response = await voiceChannelsApi.getCurrentVoiceChannel(
-				parseInt(selectedVoiceChannelId),
-				access_token,
-				refresh_token
-			)
-			return response.data
-		},
-		refetchOnWindowFocus: false,
-		refetchOnMount: false,
-		refetchOnReconnect: false,
-		staleTime: Infinity,
-		retry: false,
-		enabled: !!selectedServerId,
-	})
-
 	const { data: chatItems, refetch: refetchChat } = useQuery<ChatItemScheme[]>({
 		queryKey: ['chatItems', selectedTextChannelId],
 		queryFn: async () => {
 			if (!selectedTextChannelId) return []
 			const response = await chatItemsApi.getTextChannelsChatItems(
 				parseInt(selectedTextChannelId),
-				access_token,
-				refresh_token
+				access_token!,
+				refresh_token!
 			)
 			return response.data
 		},
@@ -269,8 +238,8 @@ const Main = () => {
 			queryFn: async () => {
 				const response = await voiceItemsApi.getVoiceChannelsVoiceItems(
 					parseInt(channel.voice_channel_id),
-					access_token,
-					refresh_token
+					access_token!,
+					refresh_token!
 				)
 				return response.data
 			},
@@ -289,6 +258,114 @@ const Main = () => {
 		return itemsByChannel
 	}, [voiceChannels, voiceItemsQueries])
 
+	const [selectedVoiceChannelId, setSelectedVoiceChannelId] = useState<
+		string | null
+	>(null)
+	const handleVoiceChannelSelect = useCallback(
+		async (voiceChannelId: string) => {
+			const currentUserId = currentUser?.user_id
+			if (!currentUserId || !selectedServerId) return
+
+			const serverId = parseInt(selectedServerId)
+			const oldChannelId = selectedVoiceChannelId
+			const newChannelId = voiceChannelId
+			try {
+				if (oldChannelId === newChannelId) {
+					const currentItems = voiceItemsByChannel[newChannelId] || []
+					const userItem = currentItems.find(i => i.user_id === currentUserId)
+
+					if (userItem) {
+						await voiceItemsApi.deleteVoiceItem(
+							userItem.voice_item_id!,
+							serverId,
+							access_token!,
+							refresh_token!
+						)
+						setSelectedVoiceChannelId(null)
+						Cookies.remove('selected_voice_channel')
+					} else {
+						await voiceItemsApi.addVoiceItem(
+							0,
+							currentUserId,
+							parseInt(newChannelId),
+							access_token!,
+							refresh_token!
+						)
+						setSelectedVoiceChannelId(newChannelId)
+						Cookies.set('selected_voice_channel', newChannelId)
+					}
+				} else if (newChannelId) {
+					if (oldChannelId) {
+						const oldItems = voiceItemsByChannel[oldChannelId] || []
+						const oldItem = oldItems.find(i => i.user_id === currentUserId)
+						if (oldItem) {
+							await voiceItemsApi.deleteVoiceItem(
+								oldItem.voice_item_id!,
+								serverId,
+								access_token!,
+								refresh_token!
+							)
+						}
+					}
+
+					await voiceItemsApi.addVoiceItem(
+						0,
+						currentUserId,
+						parseInt(newChannelId),
+						access_token!,
+						refresh_token!
+					)
+					setSelectedVoiceChannelId(newChannelId)
+					Cookies.set('selected_voice_channel', newChannelId)
+				} else {
+					if (oldChannelId) {
+						const oldItems = voiceItemsByChannel[oldChannelId] || []
+						const oldItem = oldItems.find(i => i.user_id === currentUserId)
+						if (oldItem) {
+							await voiceItemsApi.deleteVoiceItem(
+								oldItem.voice_item_id!,
+								serverId,
+								access_token!,
+								refresh_token!
+							)
+						}
+					}
+				}
+				voiceItemsQueries.forEach(q => q.refetch())
+			} catch (error) {
+				console.error('Error handling voice channel:', error)
+			}
+		},
+		[
+			access_token,
+			currentUser,
+			refresh_token,
+			selectedServerId,
+			selectedVoiceChannelId,
+			voiceItemsByChannel,
+			voiceItemsQueries,
+		]
+	)
+
+	const { data: currentVoiceChannel, refetch: refetchVoiceChannel } = useQuery({
+		queryKey: ['currentVoiceChannel', selectedVoiceChannelId],
+		queryFn: async () => {
+			if (!selectedVoiceChannelId) return null
+			const response = await voiceChannelsApi.getCurrentVoiceChannel(
+				parseInt(selectedVoiceChannelId),
+				access_token!,
+				refresh_token!
+			)
+			return response.data
+		},
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		staleTime: Infinity,
+		retry: false,
+		enabled: !!selectedServerId,
+	})
+
 	const { lastMessage } = useWebSocket(wsUrl.current, {
 		shouldReconnect: () => false,
 		onError: (event: Event) => {
@@ -300,6 +377,14 @@ const Main = () => {
 		},
 		reconnectAttempts: 0,
 	})
+
+	useEffect(() => {
+		if (access_token) {
+			wsUrl.current = `${
+				config.notifications_pisher_ws_endpoint
+			}/${uuidv4()}?token=${access_token}`
+		}
+	}, [access_token])
 
 	// Обновление данных при новых сообщениях
 	useEffect(() => {

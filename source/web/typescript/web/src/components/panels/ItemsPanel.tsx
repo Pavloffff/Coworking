@@ -45,6 +45,20 @@ const ItemsPanel = ({
 	selectedVoiceChannelId,
 	voiceItemsByChannel = {},
 }: ItemsPanelProps) => {
+	const [access_token, setAccessToken] = useState<string | null>(null)
+	const [refresh_token, setRefreshToken] = useState<string | null>(null)
+	useEffect(() => {
+		const access = localStorage.getItem('access_token')
+		const refresh = localStorage.getItem('refresh_token')
+
+		if (access && refresh) {
+			Cookies.set('access_token', access, { secure: true, sameSite: 'Lax' })
+			Cookies.set('refresh_token', refresh, { secure: true, sameSite: 'Lax' })
+			setAccessToken(access)
+			setRefreshToken(refresh)
+		}
+	}, [])
+
 	const [dimensions, setDimensions] = useState({
 		width: window.innerWidth,
 		height: window.innerHeight,
@@ -62,14 +76,12 @@ const ItemsPanel = ({
 	const containerWidth = Math.min(dimensions.width - 32, 460)
 	const containerHeight = (dimensions.height - 32) * 0.9
 
-	const access_token = Cookies.get('access_token') as string
-	const refresh_token = Cookies.get('refresh_token') as string
 	const [selectedButton, setSelectedButton] = useState('btn1')
 
 	const [serverName, setServerName] = useState('')
 	const handleAddServerClick = async () => {
 		console.log('Введенное название сервера:', serverName)
-		await serversApi.addServer(serverName, access_token, refresh_token)
+		await serversApi.addServer(serverName, access_token!, refresh_token!)
 		setServerName('')
 	}
 
@@ -79,8 +91,8 @@ const ItemsPanel = ({
 		await textChannelsApi.addTextChannel(
 			(selectedServerId ?? '-1') as unknown as number,
 			textChannelName,
-			access_token,
-			refresh_token
+			access_token!,
+			refresh_token!
 		)
 		setTextChannelName('')
 	}
@@ -91,8 +103,8 @@ const ItemsPanel = ({
 		await voiceChannelsApi.addVoiceChannel(
 			(selectedServerId ?? '-1') as unknown as number,
 			voiceChannelName,
-			access_token,
-			refresh_token
+			access_token!,
+			refresh_token!
 		)
 		setVoiceChannelName('')
 	}
@@ -103,8 +115,8 @@ const ItemsPanel = ({
 		await userApi.addServerUser(
 			(selectedServerId ?? '-1') as unknown as number,
 			serverUserData,
-			access_token,
-			refresh_token
+			access_token!,
+			refresh_token!
 		)
 		setserverUserData('')
 	}
