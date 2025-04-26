@@ -28,7 +28,7 @@ services:
       API_V1_STR: '/api/v1'
       HOST: '0.0.0.0'
       PORT: 80
-      JWT_SECRET_KEY: uweyfeiuwyft
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       KAFKA_HOST: coworking-kafka
       KAFKA_PORT: 9092
       KAFKA_DATABASE_TOPIC: coworking_database_topic
@@ -74,15 +74,15 @@ services:
       PORT: 80
       FILE_STORAGE_HOST: coworking-file-storage
       FILE_STORAGE_PORT: 9000
-      FILE_STORAGE_ACCESS_KEY: minioadmin
-      FILE_STORAGE_SECRET_KEY: minioadmin
+      FILE_STORAGE_ACCESS_KEY: ${FILE_STORAGE_ACCESS_KEY}
+      FILE_STORAGE_SECRET_KEY: ${FILE_STORAGE_SECRET_KEY}
       FILE_STORAGE_BUCKET_NAME: coworking
       DATABASE_USER: postgres
-      DATABASE_PASSWORD: 1234
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_HOST: coworking-database
       DATABASE_PORT: 5432
       DATABASE_NAME: coworking
-      JWT_SECRET_KEY: uweyfeiuwyft
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_REFRESH_SECRET_KEY: qwoerqyhowirhq
       ACCESS_TOKEN_EXPIRE_MINUTES: 30
       REFRESH_TOKEN_EXPIRE_MINUTES: 10080
@@ -115,10 +115,10 @@ services:
       KAFKA_RETRY_TIMEOUT: 10
       FILE_STORAGE_HOST: coworking-file-storage
       FILE_STORAGE_PORT: 9000
-      FILE_STORAGE_ACCESS_KEY: minioadmin
-      FILE_STORAGE_SECRET_KEY: minioadmin
+      FILE_STORAGE_ACCESS_KEY: ${FILE_STORAGE_ACCESS_KEY}
+      FILE_STORAGE_SECRET_KEY: ${FILE_STORAGE_SECRET_KEY}
       FILE_STORAGE_BUCKET_NAME: coworking
-      JWT_SECRET_KEY: uweyfeiuwyft
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     ports:
       - '8000:80'
     networks:
@@ -140,7 +140,7 @@ services:
       KAFKA_ENABLE_AUTO_COMMIT: 1
       KAFKA_INITIAL_TIMEOUT: 20
       DATABASE_USER: postgres
-      DATABASE_PASSWORD: 1234
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_HOST: coworking-database
       DATABASE_PORT: 5432
       DATABASE_NAME: coworking
