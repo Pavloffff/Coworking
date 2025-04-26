@@ -27,10 +27,11 @@ class UserGetter:
             access_token=access_token
         )
         users = []
-        for server in servers:
-            server_users = await client.get(
-                endpoint=f'users/server_id?server_id={server["server_id"]}',
-                access_token=access_token
-            )
-            users.extend(server_users)
+        if servers is not None and isinstance(servers, list) and len(servers) > 0:
+            for server in servers:
+                server_users = await client.get(
+                    endpoint=f'users/server_id?server_id={server["server_id"]}',
+                    access_token=access_token
+                )
+                users.extend(server_users)
         return users
