@@ -91,6 +91,15 @@ const InputPanel: React.FC<InputPanelProps> = ({
 				placeholder="Печатать..."
 				value={inputValue}
 				onChange={handleInputChange}
+				onKeyDown={e => {
+					if (
+						e.ctrlKey &&
+						e.key === 'Enter' &&
+						!(isSending || !selectedTextChannelId)
+					) {
+						handleSendMessage()
+					}
+				}}
 				// onPressEnter={handleSendMessage}
 				disabled={isSending || !selectedTextChannelId}
 			/>
