@@ -22,10 +22,10 @@ class DatabaseConfigurator:
         async with session_pool() as session:
             for message in self._kafka_reader.listen():
                 try:
-                    _logger.error(f'Received message: {message}')
+                    # _logger.error(f'Received message: {message}')
                     await self._process_message(session, message)
                 except Exception as ex:
-                    _logger.error(ex.with_traceback())
+                    # _logger.error(ex.with_traceback())
                     continue
 
     async def _process_message(self, session: AsyncSession, message: dict):

@@ -64,15 +64,21 @@ const Main = () => {
 		console.log('Selected text channel:', textChannelId)
 	}, [])
 
-	const handleLogout = useCallback(() => {
-		// TODO выяснить что не так с этим всем и вернуть куки и логаут, щас хз что оно все не работает
-		// localStorage.removeItem('access_token')
-		// localStorage.removeItem('refresh_token')
-		// Cookies.remove('access_token')
-		// Cookies.remove('refresh_token')
-		// navigate('/login')
-		navigate('/')
-	}, [navigate])
+	const handleLogout = useCallback(
+		() => {
+			// TODO выяснить что не так с этим всем и вернуть куки и логаут, щас хз что оно все не работает
+			// localStorage.removeItem('access_token')
+			// localStorage.removeItem('refresh_token')
+			// Cookies.remove('access_token')
+			// Cookies.remove('refresh_token')
+			// navigate('/login')
+			// navigate('/')
+			console.log('bug')
+		},
+		[
+			// navigate
+		]
+	)
 
 	const { data: servers, refetch } = useQuery<ServerModel[]>({
 		queryKey: ['servers'],
