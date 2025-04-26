@@ -36,8 +36,8 @@ const Main = () => {
 		const refresh = localStorage.getItem('refresh_token')
 
 		if (access && refresh) {
-			Cookies.set('access_token', access, { secure: true, sameSite: 'Lax' })
-			Cookies.set('refresh_token', refresh, { secure: true, sameSite: 'Lax' })
+			// Cookies.set('access_token', access, { secure: true, sameSite: 'Lax' })
+			// Cookies.set('refresh_token', refresh, { secure: true, sameSite: 'Lax' })
 			setAccessToken(access)
 			setRefreshToken(refresh)
 		} else {
@@ -65,11 +65,12 @@ const Main = () => {
 	}, [])
 
 	const handleLogout = useCallback(() => {
-		localStorage.removeItem('access_token')
-		localStorage.removeItem('refresh_token')
-		Cookies.remove('access_token')
-		Cookies.remove('refresh_token')
-		navigate('/login')
+		// TODO выяснить что не так с этим всем и вернуть куки и логаут, щас хз что оно все не работает
+		// localStorage.removeItem('access_token')
+		// localStorage.removeItem('refresh_token')
+		// Cookies.remove('access_token')
+		// Cookies.remove('refresh_token')
+		// navigate('/login')
 		navigate('/')
 	}, [navigate])
 

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Input } from 'antd'
 import { FileTextOutlined, SendOutlined } from '@ant-design/icons'
 import ButtonCollection from '../collections/ButtonCollection'
 import BlueButton from '../buttons/BlueButton'
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
 import { chatItemsApi } from '../../api/chatItems/chatItemsApi'
 
 interface InputPanelProps {
@@ -17,19 +17,21 @@ const InputPanel: React.FC<InputPanelProps> = ({
 	selectedTextChannelId,
 	refetchChat,
 }) => {
-	const [access_token, setAccessToken] = useState<string | null>(null)
-	const [refresh_token, setRefreshToken] = useState<string | null>(null)
-	useEffect(() => {
-		const access = localStorage.getItem('access_token')
-		const refresh = localStorage.getItem('refresh_token')
+	const access_token = localStorage.getItem('access_token')
+	const refresh_token = localStorage.getItem('refresh_token')
+	// const [access_token, setAccessToken] = useState<string | null>(null)
+	// const [refresh_token, setRefreshToken] = useState<string | null>(null)
+	// useEffect(() => {
+	// 	const access = localStorage.getItem('access_token')
+	// 	const refresh = localStorage.getItem('refresh_token')
 
-		if (access && refresh) {
-			Cookies.set('access_token', access, { secure: true, sameSite: 'Lax' })
-			Cookies.set('refresh_token', refresh, { secure: true, sameSite: 'Lax' })
-			setAccessToken(access)
-			setRefreshToken(refresh)
-		}
-	}, [])
+	// 	if (access && refresh) {
+	// 		// Cookies.set('access_token', access, { secure: true, sameSite: 'Lax' })
+	// 		// Cookies.set('refresh_token', refresh, { secure: true, sameSite: 'Lax' })
+	// 		setAccessToken(access)
+	// 		setRefreshToken(refresh)
+	// 	}
+	// }, [])
 
 	const [inputValue, setInputValue] = useState<string>('')
 	const [isSending, setIsSending] = useState(false)

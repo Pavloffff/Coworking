@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Form, Input, Button, Typography, Tabs, message } from 'antd'
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons'
 import { authApi } from '../api/auth/authApi'
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
 import { AuthResponse, User } from '../api/types'
 import { AxiosError, AxiosResponse } from 'axios'
 
@@ -79,15 +79,21 @@ const Login = () => {
 			} catch (error) {
 				if (error instanceof AxiosError && error.response?.status === 404) {
 					try {
+						// const refreshResponse = await authApi.refresh({
+						// 	access_token: Cookies.get('access_token') || '',
+						// 	refresh_token: Cookies.get('refresh_token') || '',
+						// })
 						const refreshResponse = await authApi.refresh({
-							access_token: Cookies.get('access_token') || '',
-							refresh_token: Cookies.get('refresh_token') || '',
+							access_token: localStorage.getItem('access_token') || '',
+							refresh_token: localStorage.getItem('refresh_token') || '',
 						})
 						handleAuthSuccess(refreshResponse)
 					} catch (refreshError) {
 						console.log(refreshError)
-						Cookies.remove('access_token')
-						Cookies.remove('refresh_token')
+						// Cookies.remove('access_token')
+						// Cookies.remove('refresh_token')
+						localStorage.removeItem('access_token')
+						localStorage.removeItem('refresh_token')
 						message.error('Сессия истекла, войдите заново')
 					}
 				} else {

@@ -10,7 +10,7 @@ import {
 } from '../../api/types'
 import { Button, Input, Typography } from 'antd'
 import { serversApi } from '../../api/servers/serversApi'
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
 import { textChannelsApi } from '../../api/textChannels/textChannelsApi'
 import TextChannelsList from '../lists/TextChannelsList'
 import UsersList from '../lists/UsersList'
@@ -45,19 +45,22 @@ const ItemsPanel = ({
 	selectedVoiceChannelId,
 	voiceItemsByChannel = {},
 }: ItemsPanelProps) => {
-	const [access_token, setAccessToken] = useState<string | null>(null)
-	const [refresh_token, setRefreshToken] = useState<string | null>(null)
-	useEffect(() => {
-		const access = localStorage.getItem('access_token')
-		const refresh = localStorage.getItem('refresh_token')
+	const access_token = localStorage.getItem('access_token')
+	const refresh_token = localStorage.getItem('refresh_token')
+	// const [access_token, setAccessToken] = useState<string | null>(null)
+	// const [refresh_token, setRefreshToken] = useState<string | null>(null)
+	// useEffect(() => {
+	// 	const access = localStorage.getItem('access_token')
+	// 	const refresh = localStorage.getItem('refresh_token')
 
-		if (access && refresh) {
-			Cookies.set('access_token', access, { secure: true, sameSite: 'Lax' })
-			Cookies.set('refresh_token', refresh, { secure: true, sameSite: 'Lax' })
-			setAccessToken(access)
-			setRefreshToken(refresh)
-		}
-	}, [])
+	// 	if (access && refresh) {
+
+	// 		Cookies.set('access_token', access, { secure: true, sameSite: 'Lax' })
+	// 		Cookies.set('refresh_token', refresh, { secure: true, sameSite: 'Lax' })
+	// 		setAccessToken(access)
+	// 		setRefreshToken(refresh)
+	// 	}
+	// }, [])
 
 	const [dimensions, setDimensions] = useState({
 		width: window.innerWidth,

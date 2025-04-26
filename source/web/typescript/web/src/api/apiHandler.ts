@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
 import databaseReaderApiClient from './databaseReaderClient'
 
 interface ApiRequestConfig {
@@ -65,9 +65,10 @@ async function refreshTokens(config: {
 			}
 		)
 
-		Cookies.set('access_token', response.data.access, { expires: 1 })
-		Cookies.set('refresh_token', response.data.refresh, { expires: 7 })
-
+		// Cookies.set('access_token', response.data.access, { expires: 1 })
+		// Cookies.set('refresh_token', response.data.refresh, { expires: 7 })
+		localStorage.setItem('access_token', response.data.access)
+		localStorage.setItem('refresh_token', response.data.refresh)
 		return response.data
 	} catch (error) {
 		console.error('Failed to refresh tokens:', error)
