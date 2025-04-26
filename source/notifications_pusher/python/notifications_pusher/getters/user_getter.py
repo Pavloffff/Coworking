@@ -28,9 +28,9 @@ class UserGetter:
         )
         users = []
         if servers is not None and isinstance(servers, list) and len(servers) > 0:
-            _logger.error(server["server_id"])
-            _logger.error(type(server["server_id"]))
             for server in servers:
+                _logger.error(server["server_id"])
+                _logger.error(type(server["server_id"]))
                 server_users = await client.get(
                     endpoint=f'users/server_id?server_id={server["server_id"]}',
                     access_token=access_token
