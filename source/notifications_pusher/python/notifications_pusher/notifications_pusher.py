@@ -90,11 +90,11 @@ class NotificationsPusher:
         data = message['data']
         access_token = message.get('access_token')
         
-        response_list = await self._waiter_strategy.wait(model, method, data, access_token)
+        response_list, model_to_notify = await self._waiter_strategy.wait(model, method, data, access_token)
         if response_list is not None:
             for response_data in response_list:
                 users_to_notify = await UserGetter.get(
-                    self._database_reader_client, response_data, model, access_token
+                    self._database_reader_client, response_data, model_to_notify, access_token
                 )
                 for user in users_to_notify:
                     await ws_manager.send_to_user(

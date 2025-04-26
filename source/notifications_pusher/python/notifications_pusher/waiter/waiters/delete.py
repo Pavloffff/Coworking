@@ -10,4 +10,4 @@ async def wait_delete(client: DatabaseReaderClient, endpoint: str, data: dict, a
         response = await client.get(endpoint=f'{endpoint}/{id}', access_token=access_token)
         if 'error' in response.keys() and response['error'] == '{"detail":"Not Found"}':
             _logger.error(data['server_id'])
-            return [{'server_id': data['server_id']}]
+            return [{'server_id': data['server_id']}], 'server'
