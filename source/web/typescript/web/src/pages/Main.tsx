@@ -64,21 +64,16 @@ const Main = () => {
 		console.log('Selected text channel:', textChannelId)
 	}, [])
 
-	const handleLogout = useCallback(
-		() => {
-			// TODO выяснить что не так с этим всем и вернуть куки и логаут, щас хз что оно все не работает
-			// localStorage.removeItem('access_token')
-			// localStorage.removeItem('refresh_token')
-			// Cookies.remove('access_token')
-			// Cookies.remove('refresh_token')
-			// navigate('/login')
-			// navigate('/')
-			console.log('bug')
-		},
-		[
-			// navigate
-		]
-	)
+	const handleLogout = useCallback(() => {
+		// TODO выяснить что не так с этим всем и вернуть куки и логаут, щас хз что оно все не работает
+		localStorage.removeItem('access_token')
+		localStorage.removeItem('refresh_token')
+		// Cookies.remove('access_token')
+		// Cookies.remove('refresh_token')
+		navigate('/login')
+		// navigate('/')
+		console.log('bug')
+	}, [navigate])
 
 	const { data: servers, refetch } = useQuery<ServerModel[]>({
 		queryKey: ['servers'],
@@ -374,7 +369,7 @@ const Main = () => {
 	})
 
 	const { lastMessage } = useWebSocket(wsUrl.current, {
-		shouldReconnect: () => false,
+		shouldReconnect: () => true,
 		onError: (event: Event) => {
 			console.error('WebSocket error:', event)
 			handleLogout()
@@ -382,7 +377,7 @@ const Main = () => {
 		onClose: (event: CloseEvent) => {
 			if (event.code !== 1000) handleLogout()
 		},
-		reconnectAttempts: 0,
+		reconnectAttempts: 10,
 	})
 
 	useEffect(() => {
