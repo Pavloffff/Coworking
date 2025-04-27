@@ -370,13 +370,13 @@ const Main = () => {
 
 	const { lastMessage } = useWebSocket(wsUrl.current, {
 		shouldReconnect: () => true,
-		onError: (event: Event) => {
-			console.error('WebSocket error:', event)
-			handleLogout()
-		},
-		// onClose: (event: CloseEvent) => {
-		// 	if (event.code !== 1000) handleLogout()
+		// onError: (event: Event) => {
+		// 	console.error('WebSocket error:', event)
+		// 	handleLogout()
 		// },
+		onClose: (event: CloseEvent) => {
+			if (event.code !== 1000) handleLogout()
+		},
 		reconnectAttempts: 10,
 	})
 
