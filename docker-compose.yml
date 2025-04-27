@@ -1,6 +1,5 @@
 version: '3.8'
 
-#TODO: вынести все в .env
 #TODO: выпилить маппинг ненужных портов
 #TODO: переименовать postgres_data
 services:

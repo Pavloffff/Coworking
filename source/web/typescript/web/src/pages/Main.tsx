@@ -386,7 +386,7 @@ const Main = () => {
 	})
 
 	const { lastMessage } = useWebSocket(wsUrl.current, {
-		shouldReconnect: () => true,
+		// shouldReconnect: () => true,
 		// onError: (event: Event) => {
 		// 	console.error('WebSocket error:', event)
 		// 	handleLogout()
@@ -394,7 +394,7 @@ const Main = () => {
 		// onClose: (event: CloseEvent) => {
 		// 	if (event.code !== 1000) handleLogout()
 		// },
-		reconnectAttempts: 10,
+		// reconnectAttempts: 0,
 	})
 
 	// useEffect(() => {
