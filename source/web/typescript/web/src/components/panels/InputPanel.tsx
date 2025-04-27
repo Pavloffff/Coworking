@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Input } from 'antd'
 import { FileTextOutlined, SendOutlined } from '@ant-design/icons'
 import ButtonCollection from '../collections/ButtonCollection'
@@ -36,6 +36,14 @@ const InputPanel: React.FC<InputPanelProps> = ({
 	const [inputValue, setInputValue] = useState<string>('')
 	const [isSending, setIsSending] = useState(false)
 
+	const inputRef = useRef<HTMLTextAreaElement>(null)
+
+	useEffect(() => {
+		if (selectedTextChannelId && inputRef.current) {
+			inputRef.current.focus()
+		}
+	}, [selectedTextChannelId])
+
 	const handleSendMessage = async () => {
 		if (!inputValue.trim() || !selectedTextChannelId || !currentUserId) return
 
@@ -51,6 +59,9 @@ const InputPanel: React.FC<InputPanelProps> = ({
 			)
 
 			setInputValue('')
+			if (inputRef.current) {
+				inputRef.current.focus()
+			}
 			refetchChat()
 		} catch (error) {
 			console.error('Ошибка отправки сообщения:', error)
@@ -83,6 +94,7 @@ const InputPanel: React.FC<InputPanelProps> = ({
 			}}
 		>
 			<Input.TextArea
+				ref={inputRef}
 				style={{
 					height: '58px',
 					fontSize: '30px',
