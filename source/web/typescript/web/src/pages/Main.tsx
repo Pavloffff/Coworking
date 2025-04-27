@@ -160,7 +160,10 @@ const Main = () => {
 		enabled: !!selectedServerId,
 	})
 
-	const { data: currentServer, refetch: refetchServer } = useQuery({
+	const {
+		data: currentServer,
+		// refetch: refetchServer
+	} = useQuery({
 		queryKey: ['currentServer', selectedServerId],
 		queryFn: async () => {
 			if (!selectedServerId) return null
@@ -179,7 +182,10 @@ const Main = () => {
 		enabled: !!selectedServerId,
 	})
 
-	const { data: currentTextChannel, refetch: refetchTextChannel } = useQuery({
+	const {
+		data: currentTextChannel,
+		// refetch: refetchTextChannel
+	} = useQuery({
 		queryKey: ['currentTextChannel', selectedTextChannelId],
 		queryFn: async () => {
 			if (!selectedTextChannelId) return null
@@ -198,7 +204,10 @@ const Main = () => {
 		enabled: !!selectedServerId,
 	})
 
-	const { data: currentUser, refetch: refetchUser } = useQuery({
+	const {
+		data: currentUser,
+		// refetch: refetchUser
+	} = useQuery({
 		queryKey: ['currentUser'],
 		queryFn: async () => {
 			const response = await userApi.getCurrentUser(
@@ -245,6 +254,11 @@ const Main = () => {
 				)
 				return response.data
 			},
+			refetchOnWindowFocus: false,
+			refetchOnMount: false,
+			refetchOnReconnect: false,
+			staleTime: Infinity,
+			retry: false,
 			enabled: !!voiceChannels && !!access_token,
 		})),
 	})
@@ -349,7 +363,10 @@ const Main = () => {
 		]
 	)
 
-	const { data: currentVoiceChannel, refetch: refetchVoiceChannel } = useQuery({
+	const {
+		data: currentVoiceChannel,
+		// refetch: refetchVoiceChannel
+	} = useQuery({
 		queryKey: ['currentVoiceChannel', selectedVoiceChannelId],
 		queryFn: async () => {
 			if (!selectedVoiceChannelId) return null
@@ -380,13 +397,13 @@ const Main = () => {
 		reconnectAttempts: 10,
 	})
 
-	useEffect(() => {
-		if (access_token) {
-			wsUrl.current = `${
-				config.notifications_pisher_ws_endpoint
-			}/${uuidv4()}?token=${access_token}`
-		}
-	}, [access_token])
+	// useEffect(() => {
+	// 	if (access_token) {
+	// 		wsUrl.current = `${
+	// 			config.notifications_pisher_ws_endpoint
+	// 		}/${uuidv4()}?token=${access_token}`
+	// 	}
+	// }, [access_token])
 
 	// Обновление данных при новых сообщениях
 	useEffect(() => {
@@ -454,47 +471,47 @@ const Main = () => {
 		}
 	}, [servers])
 
-	useEffect(() => {
-		if (access_token) {
-			refetchUser()
-		}
-	}, [access_token, refetchUser])
+	// useEffect(() => {
+	// 	if (access_token) {
+	// 		refetchUser()
+	// 	}
+	// }, [access_token, refetchUser])
 
-	useEffect(() => {
-		if (isMounted.current && lastMessage) {
-			refetchChat()
-		}
-	}, [lastMessage, refetchChat])
+	// useEffect(() => {
+	// 	if (isMounted.current && lastMessage) {
+	// 		refetchChat()
+	// 	}
+	// }, [lastMessage, refetchChat])
 
-	useEffect(() => {
-		if (selectedServerId) {
-			refetchServer()
-		}
-	}, [selectedServerId, refetchServer])
+	// useEffect(() => {
+	// 	if (selectedServerId) {
+	// 		refetchServer()
+	// 	}
+	// }, [selectedServerId, refetchServer])
 
-	useEffect(() => {
-		if (selectedTextChannelId) {
-			refetchTextChannel()
-		}
-	}, [selectedTextChannelId, refetchTextChannel])
+	// useEffect(() => {
+	// 	if (selectedTextChannelId) {
+	// 		refetchTextChannel()
+	// 	}
+	// }, [selectedTextChannelId, refetchTextChannel])
 
-	useEffect(() => {
-		if (selectedVoiceChannelId) {
-			refetchVoiceChannel()
-		}
-	}, [selectedVoiceChannelId, refetchVoiceChannel])
+	// useEffect(() => {
+	// 	if (selectedVoiceChannelId) {
+	// 		refetchVoiceChannel()
+	// 	}
+	// }, [selectedVoiceChannelId, refetchVoiceChannel])
 
-	useEffect(() => {
-		if (selectedServerId) {
-			refetchUsers()
-		}
-	}, [selectedServerId, refetchUsers])
+	// useEffect(() => {
+	// 	if (selectedServerId) {
+	// 		refetchUsers()
+	// 	}
+	// }, [selectedServerId, refetchUsers])
 
-	useEffect(() => {
-		if (selectedTextChannelId) {
-			refetchChat()
-		}
-	}, [selectedTextChannelId, refetchChat])
+	// useEffect(() => {
+	// 	if (selectedTextChannelId) {
+	// 		refetchChat()
+	// 	}
+	// }, [selectedTextChannelId, refetchChat])
 
 	return (
 		<div
