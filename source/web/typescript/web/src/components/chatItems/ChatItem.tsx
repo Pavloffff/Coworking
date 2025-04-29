@@ -21,10 +21,10 @@ const ChatItem: React.FC<ChatItemProps> = ({ photo, name, text }) => {
 			}}
 		>
 			<AvatarCircle src={photo} size={48} />
-
 			<div
 				style={{
 					marginLeft: '12px',
+					maxWidth: '90%',
 				}}
 			>
 				<div
@@ -43,10 +43,14 @@ const ChatItem: React.FC<ChatItemProps> = ({ photo, name, text }) => {
 					style={{
 						fontSize: '14px',
 						color: '#555',
-						whiteSpace: 'pre',
+						whiteSpace: 'pre-wrap',
+						// overflow: 'hidden',
+						// wordWrap: 'break-word',
+						// wordBreak: 'break-word',
+						// hyphens: 'auto',
 					}}
 				>
-					<Paragraph> {text} </Paragraph>
+					<Paragraph>{text}</Paragraph>
 				</div>
 			</div>
 		</div>
