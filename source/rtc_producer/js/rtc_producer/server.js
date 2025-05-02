@@ -24,8 +24,8 @@ const httpServer = http.createServer(app)
 const socketio = require('socket.io')
 const config = require('./config/config')
 
-const Client = require('./types/Client')
-const Channel = require('./types/Channel')
+const Client = require('./types/client')
+const Channel = require('./types/channel')
 
 const createWorkers = require('./workers/create')
 const getWorker = require('./workers/get')
@@ -207,4 +207,6 @@ io.on('connect', socket=>{
 })
 
 // httpsServer.listen(config.port)
-httpServer.listen(config.port)
+httpServer.listen(config.port, '0.0.0.0', () => {
+  console.log(`Server running on 0.0.0.0:${config.port}`)
+})

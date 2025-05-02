@@ -41,10 +41,14 @@ const config = {
     ],
     webRtcTransport: {
       listenIps: [
+        // {
+        //   ip: '127.0.0.1', //anywhere
+        //   announcedIp: null // replace by public IP address
+        //   // announcedIp: '76.97.119.246',
+        // }
         {
-          ip: '127.0.0.1', //anywhere
-          announcedIp: null // replace by public IP address
-          // announcedIp: '76.97.119.246',
+          ip: '0.0.0.0',
+          announcedIp: null
         }
       ],
       maxIncomingBitrate: 5000000,

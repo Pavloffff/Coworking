@@ -58,6 +58,17 @@ services:
       - coworking-network
     restart: always
 
+  coworking-rtc-producer:
+    build: source/rtc_producer/js
+    depends_on:
+      - coworking-servers-configurator
+    ports:
+      - "3031:3031/tcp"
+      - "40000-41000:40000-41000/udp"
+    networks:
+      - coworking-network
+    restart: always
+
   coworking-database-reader:
     build: 'source/database_reader/python'
     depends_on:
