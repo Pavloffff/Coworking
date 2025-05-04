@@ -65,6 +65,7 @@ services:
     ports:
       - "3031:3031/tcp"
       - "40000-41000:40000-41000/udp"
+      - "40000-41000:40000-41000/tcp"
     networks:
       - coworking-network
     restart: always
