@@ -62,7 +62,7 @@ services:
     build: source/rtc_producer/js
     depends_on:
       - coworking-servers-configurator
-      - coworking-coturn
+        #      - coworking-coturn
     ports:
       - "3031:3031/tcp"
       - "40000-41000:40000-41000/udp"
@@ -71,14 +71,14 @@ services:
       - coworking-network
     restart: always
 
-  coworking-coturn:
-    image: coturn/coturn
-    command: -n --log-file=stdout --lt-cred-mech --fingerprint --no-multicast-peers --no-cli --no-tlsv1 --no-tlsv1_1 --realm=my.realm.org --user user:pass -v
-    ports:
-      - "3478:3478/udp"
-    networks:
-      - coworking-network
-    restart: always
+      #  coworking-coturn:
+      #  image: coturn/coturn
+      #command: -n --log-file=stdout --lt-cred-mech --fingerprint --no-multicast-peers --no-cli --no-tlsv1 --no-tlsv1_1 --realm=my.realm.org --user user:pass -v
+      #ports:
+      #- "3478:3478/udp"
+      # networks:
+      #- coworking-network
+      #restart: always
 
   coworking-database-reader:
     build: 'source/database_reader/python'
